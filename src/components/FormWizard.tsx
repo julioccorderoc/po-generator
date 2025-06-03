@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { ArrowLeft, X } from 'lucide-react';
 import ManufacturingStep from './steps/ManufacturingStep';
 import ProductConditionsStep from './steps/ProductConditionsStep';
 import OrderDetailsStep from './steps/OrderDetailsStep';
@@ -27,7 +28,11 @@ export interface FormData {
   extraFields: { label: string; value: string }[];
 }
 
-const FormWizard = () => {
+interface FormWizardProps {
+  onCancel: () => void;
+}
+
+const FormWizard: React.FC<FormWizardProps> = ({ onCancel }) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState<FormData>({
     manufacturer: '',
@@ -102,8 +107,19 @@ const FormWizard = () => {
         <CardHeader>
           <div className="flex items-center justify-between mb-4">
             <CardTitle className="text-2xl">Order Form</CardTitle>
-            <div className="text-sm text-gray-500">
-              Step {currentStep} of {totalSteps}
+            <div className="flex items-center gap-4">
+              <div className="text-sm text-gray-500">
+                Step {currentStep} of {totalSteps}
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={onCancel}
+                className="text-red-600 hover:text-red-700 hover:bg-red-50"
+              >
+                <X className="h-4 w-4 mr-2" />
+                Cancel
+              </Button>
             </div>
           </div>
           
@@ -146,11 +162,27 @@ const FormWizard = () => {
                 variant="outline"
                 onClick={prevStep}
                 disabled={currentStep === 1}
+                className="flex items-center"
               >
-                Previous
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back
               </Button>
               <Button onClick={nextStep}>
                 Next
+              </Button>
+            </div>
+          )}
+
+          {/* Back button for confirmation step */}
+          {currentStep === totalSteps && (
+            <div className="flex justify-start mt-8">
+              <Button
+                variant="outline"
+                onClick={prevStep}
+                className="flex items-center"
+              >
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back to Edit
               </Button>
             </div>
           )}

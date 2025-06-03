@@ -7,8 +7,16 @@ import FormWizard from '@/components/FormWizard';
 const Index = () => {
   const [showForm, setShowForm] = useState(false);
 
+  const handleStartForm = () => {
+    setShowForm(true);
+  };
+
+  const handleCancelForm = () => {
+    setShowForm(false);
+  };
+
   if (showForm) {
-    return <FormWizard />;
+    return <FormWizard onCancel={handleCancelForm} />;
   }
 
   return (
@@ -22,7 +30,7 @@ const Index = () => {
         </CardHeader>
         <CardContent className="text-center">
           <Button 
-            onClick={() => setShowForm(true)}
+            onClick={handleStartForm}
             size="lg"
             className="w-full"
           >

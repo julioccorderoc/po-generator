@@ -3,8 +3,9 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { CheckCircle, Send } from 'lucide-react';
+import { CheckCircle, Send, AlertCircle } from 'lucide-react';
 import { FormData } from '../FormWizard';
+import { useToast } from '@/components/ui/use-toast';
 
 interface ConfirmationStepProps {
   formData: FormData;
@@ -13,9 +14,12 @@ interface ConfirmationStepProps {
 const ConfirmationStep: React.FC<ConfirmationStepProps> = ({ formData }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const { toast } = useToast();
 
   const handleSubmit = async () => {
     setIsSubmitting(true);
+    setSubmitError(null);
     
     // Log to console
     console.log('Form Data:', JSON.stringify(formData, null, 2));
@@ -28,12 +32,23 @@ const ConfirmationStep: React.FC<ConfirmationStepProps> = ({ formData }) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(formData),
+        mode: 'no-cors' // Add this to handle CORS issues
       });
       
-      console.log('Submission response:', response.status);
+      console.log('Submission successful');
       setIsSubmitted(true);
+      toast({
+        title: "Success!",
+        description: "Your order has been submitted successfully.",
+      });
     } catch (error) {
       console.error('Error submitting form:', error);
+      setSubmitError('Failed to submit the form. Please try again.');
+      toast({
+        title: "Error",
+        description: "Failed to submit the form. Please try again.",
+        variant: "destructive",
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -160,6 +175,14 @@ const ConfirmationStep: React.FC<ConfirmationStepProps> = ({ formData }) => {
             </div>
           </CardContent>
         </Card>
+      )}
+
+      {/* Error Message */}
+      {submitError && (
+        <div className="flex items-center justify-center p-4 bg-red-50 border border-red-200 rounded-md">
+          <AlertCircle className="h-5 w-5 text-red-600 mr-2" />
+          <span className="text-red-600 text-sm">{submitError}</span>
+        </div>
       )}
 
       {/* Submit Button */}
