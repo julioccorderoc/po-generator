@@ -1,0 +1,8 @@
+
+[
+  { "id": "ground", "name": "Ground Shipping" },
+  { "id": "express", "name": "Express Delivery" },
+  { "id": "overnight", "name": "Overnight Shipping" },
+  { "id": "freight", "name": "Freight Shipping" },
+  { "id": "pickup", "name": "Customer Pickup" }
+]

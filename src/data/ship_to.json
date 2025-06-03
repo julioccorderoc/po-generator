@@ -1,0 +1,8 @@
+
+[
+  { "id": "warehouse_a", "name": "Warehouse A - New York" },
+  { "id": "warehouse_b", "name": "Warehouse B - Los Angeles" },
+  { "id": "warehouse_c", "name": "Warehouse C - Chicago" },
+  { "id": "distribution_center", "name": "Main Distribution Center" },
+  { "id": "retail_store", "name": "Retail Store Network" }
+]

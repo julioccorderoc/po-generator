@@ -1,0 +1,8 @@
+
+[
+  { "id": "acme", "name": "ACME Manufacturing Co." },
+  { "id": "globodyne", "name": "Globodyne Corporation" },
+  { "id": "initech", "name": "Initech Solutions" },
+  { "id": "umbrella", "name": "Umbrella Corporation" },
+  { "id": "wayne", "name": "Wayne Enterprises" }
+]
