@@ -2,162 +2,162 @@
 {
   "acme": {
     "electronics": [
-      { "id": "cpu_001", "name": "Intel Core i7 Processor", "sku": "CPU-001", "price": 299.99 },
-      { "id": "gpu_001", "name": "NVIDIA GeForce RTX 4080", "sku": "GPU-001", "price": 1199.99 },
-      { "id": "ram_001", "name": "32GB DDR4 Memory", "sku": "RAM-001", "price": 149.99 },
-      { "id": "ssd_001", "name": "1TB NVMe SSD", "sku": "SSD-001", "price": 89.99 }
+      { "id": "cpu_001", "manufacturer_id": "ACM-CPU-001", "price": 299.99 },
+      { "id": "gpu_001", "manufacturer_id": "ACM-GPU-001", "price": 1199.99 },
+      { "id": "ram_001", "manufacturer_id": "ACM-RAM-001", "price": 149.99 },
+      { "id": "ssd_001", "manufacturer_id": "ACM-SSD-001", "price": 89.99 }
     ],
     "chemicals": [
-      { "id": "acid_001", "name": "Sulfuric Acid 98%", "sku": "ACID-001", "price": 45.99 },
-      { "id": "base_001", "name": "Sodium Hydroxide", "sku": "BASE-001", "price": 32.50 },
-      { "id": "solvent_001", "name": "Acetone Industrial Grade", "sku": "SOLV-001", "price": 28.75 },
-      { "id": "catalyst_001", "name": "Platinum Catalyst", "sku": "CAT-001", "price": 850.00 }
+      { "id": "acid_001", "manufacturer_id": "ACM-ACID-001", "price": 45.99 },
+      { "id": "base_001", "manufacturer_id": "ACM-BASE-001", "price": 32.50 },
+      { "id": "solvent_001", "manufacturer_id": "ACM-SOLV-001", "price": 28.75 },
+      { "id": "catalyst_001", "manufacturer_id": "ACM-CAT-001", "price": 850.00 }
     ],
     "textiles": [
-      { "id": "cotton_001", "name": "Organic Cotton Fabric", "sku": "COT-001", "price": 12.50 },
-      { "id": "silk_001", "name": "Pure Silk Material", "sku": "SILK-001", "price": 45.00 },
-      { "id": "wool_001", "name": "Merino Wool Blend", "sku": "WOOL-001", "price": 35.75 },
-      { "id": "nylon_001", "name": "Industrial Nylon", "sku": "NYL-001", "price": 18.25 }
+      { "id": "cotton_001", "manufacturer_id": "ACM-COT-001", "price": 12.50 },
+      { "id": "silk_001", "manufacturer_id": "ACM-SILK-001", "price": 45.00 },
+      { "id": "wool_001", "manufacturer_id": "ACM-WOOL-001", "price": 35.75 },
+      { "id": "nylon_001", "manufacturer_id": "ACM-NYL-001", "price": 18.25 }
     ],
     "machinery": [
-      { "id": "motor_001", "name": "Electric Motor 5HP", "sku": "MTR-001", "price": 450.00 },
-      { "id": "pump_001", "name": "Centrifugal Pump", "sku": "PUMP-001", "price": 320.00 },
-      { "id": "valve_001", "name": "Ball Valve 2 inch", "sku": "VALVE-001", "price": 75.50 },
-      { "id": "bearing_001", "name": "Ball Bearing Set", "sku": "BEAR-001", "price": 25.00 }
+      { "id": "motor_001", "manufacturer_id": "ACM-MTR-001", "price": 450.00 },
+      { "id": "pump_001", "manufacturer_id": "ACM-PUMP-001", "price": 320.00 },
+      { "id": "valve_001", "manufacturer_id": "ACM-VALVE-001", "price": 75.50 },
+      { "id": "bearing_001", "manufacturer_id": "ACM-BEAR-001", "price": 25.00 }
     ],
     "automotive": [
-      { "id": "brake_001", "name": "Brake Pads Front Set", "sku": "BRAKE-001", "price": 89.99 },
-      { "id": "filter_001", "name": "Air Filter Assembly", "sku": "FILT-001", "price": 24.99 },
-      { "id": "oil_001", "name": "Synthetic Motor Oil", "sku": "OIL-001", "price": 35.50 },
-      { "id": "tire_001", "name": "All-Season Tire", "sku": "TIRE-001", "price": 125.00 }
+      { "id": "brake_001", "manufacturer_id": "ACM-BRAKE-001", "price": 89.99 },
+      { "id": "filter_001", "manufacturer_id": "ACM-FILT-001", "price": 24.99 },
+      { "id": "oil_001", "manufacturer_id": "ACM-OIL-001", "price": 35.50 },
+      { "id": "tire_001", "manufacturer_id": "ACM-TIRE-001", "price": 125.00 }
     ]
   },
   "globodyne": {
     "electronics": [
-      { "id": "cpu_001", "name": "Intel Core i7 Processor", "sku": "CPU-001", "price": 319.99 },
-      { "id": "gpu_001", "name": "NVIDIA GeForce RTX 4080", "sku": "GPU-001", "price": 1249.99 },
-      { "id": "ram_001", "name": "32GB DDR4 Memory", "sku": "RAM-001", "price": 159.99 },
-      { "id": "ssd_001", "name": "1TB NVMe SSD", "sku": "SSD-001", "price": 94.99 }
+      { "id": "cpu_001", "manufacturer_id": "GLB-CPU-001", "price": 319.99 },
+      { "id": "gpu_001", "manufacturer_id": "GLB-GPU-001", "price": 1249.99 },
+      { "id": "ram_001", "manufacturer_id": "GLB-RAM-001", "price": 159.99 },
+      { "id": "ssd_001", "manufacturer_id": "GLB-SSD-001", "price": 94.99 }
     ],
     "chemicals": [
-      { "id": "acid_001", "name": "Sulfuric Acid 98%", "sku": "ACID-001", "price": 48.99 },
-      { "id": "base_001", "name": "Sodium Hydroxide", "sku": "BASE-001", "price": 35.50 },
-      { "id": "solvent_001", "name": "Acetone Industrial Grade", "sku": "SOLV-001", "price": 31.75 },
-      { "id": "catalyst_001", "name": "Platinum Catalyst", "sku": "CAT-001", "price": 899.00 }
+      { "id": "acid_001", "manufacturer_id": "GLB-ACID-001", "price": 48.99 },
+      { "id": "base_001", "manufacturer_id": "GLB-BASE-001", "price": 35.50 },
+      { "id": "solvent_001", "manufacturer_id": "GLB-SOLV-001", "price": 31.75 },
+      { "id": "catalyst_001", "manufacturer_id": "GLB-CAT-001", "price": 899.00 }
     ],
     "textiles": [
-      { "id": "cotton_001", "name": "Organic Cotton Fabric", "sku": "COT-001", "price": 13.50 },
-      { "id": "silk_001", "name": "Pure Silk Material", "sku": "SILK-001", "price": 48.00 },
-      { "id": "wool_001", "name": "Merino Wool Blend", "sku": "WOOL-001", "price": 38.75 },
-      { "id": "nylon_001", "name": "Industrial Nylon", "sku": "NYL-001", "price": 19.25 }
+      { "id": "cotton_001", "manufacturer_id": "GLB-COT-001", "price": 13.50 },
+      { "id": "silk_001", "manufacturer_id": "GLB-SILK-001", "price": 48.00 },
+      { "id": "wool_001", "manufacturer_id": "GLB-WOOL-001", "price": 38.75 },
+      { "id": "nylon_001", "manufacturer_id": "GLB-NYL-001", "price": 19.25 }
     ],
     "machinery": [
-      { "id": "motor_001", "name": "Electric Motor 5HP", "sku": "MTR-001", "price": 475.00 },
-      { "id": "pump_001", "name": "Centrifugal Pump", "sku": "PUMP-001", "price": 340.00 },
-      { "id": "valve_001", "name": "Ball Valve 2 inch", "sku": "VALVE-001", "price": 80.50 },
-      { "id": "bearing_001", "name": "Ball Bearing Set", "sku": "BEAR-001", "price": 28.00 }
+      { "id": "motor_001", "manufacturer_id": "GLB-MTR-001", "price": 475.00 },
+      { "id": "pump_001", "manufacturer_id": "GLB-PUMP-001", "price": 340.00 },
+      { "id": "valve_001", "manufacturer_id": "GLB-VALVE-001", "price": 80.50 },
+      { "id": "bearing_001", "manufacturer_id": "GLB-BEAR-001", "price": 28.00 }
     ],
     "automotive": [
-      { "id": "brake_001", "name": "Brake Pads Front Set", "sku": "BRAKE-001", "price": 94.99 },
-      { "id": "filter_001", "name": "Air Filter Assembly", "sku": "FILT-001", "price": 27.99 },
-      { "id": "oil_001", "name": "Synthetic Motor Oil", "sku": "OIL-001", "price": 38.50 },
-      { "id": "tire_001", "name": "All-Season Tire", "sku": "TIRE-001", "price": 135.00 }
+      { "id": "brake_001", "manufacturer_id": "GLB-BRAKE-001", "price": 94.99 },
+      { "id": "filter_001", "manufacturer_id": "GLB-FILT-001", "price": 27.99 },
+      { "id": "oil_001", "manufacturer_id": "GLB-OIL-001", "price": 38.50 },
+      { "id": "tire_001", "manufacturer_id": "GLB-TIRE-001", "price": 135.00 }
     ]
   },
   "initech": {
     "electronics": [
-      { "id": "cpu_001", "name": "Intel Core i7 Processor", "sku": "CPU-001", "price": 289.99 },
-      { "id": "gpu_001", "name": "NVIDIA GeForce RTX 4080", "sku": "GPU-001", "price": 1179.99 },
-      { "id": "ram_001", "name": "32GB DDR4 Memory", "sku": "RAM-001", "price": 139.99 },
-      { "id": "ssd_001", "name": "1TB NVMe SSD", "sku": "SSD-001", "price": 84.99 }
+      { "id": "cpu_001", "manufacturer_id": "INT-CPU-001", "price": 289.99 },
+      { "id": "gpu_001", "manufacturer_id": "INT-GPU-001", "price": 1179.99 },
+      { "id": "ram_001", "manufacturer_id": "INT-RAM-001", "price": 139.99 },
+      { "id": "ssd_001", "manufacturer_id": "INT-SSD-001", "price": 84.99 }
     ],
     "chemicals": [
-      { "id": "acid_001", "name": "Sulfuric Acid 98%", "sku": "ACID-001", "price": 42.99 },
-      { "id": "base_001", "name": "Sodium Hydroxide", "sku": "BASE-001", "price": 29.50 },
-      { "id": "solvent_001", "name": "Acetone Industrial Grade", "sku": "SOLV-001", "price": 25.75 },
-      { "id": "catalyst_001", "name": "Platinum Catalyst", "sku": "CAT-001", "price": 825.00 }
+      { "id": "acid_001", "manufacturer_id": "INT-ACID-001", "price": 42.99 },
+      { "id": "base_001", "manufacturer_id": "INT-BASE-001", "price": 29.50 },
+      { "id": "solvent_001", "manufacturer_id": "INT-SOLV-001", "price": 25.75 },
+      { "id": "catalyst_001", "manufacturer_id": "INT-CAT-001", "price": 825.00 }
     ],
     "textiles": [
-      { "id": "cotton_001", "name": "Organic Cotton Fabric", "sku": "COT-001", "price": 11.50 },
-      { "id": "silk_001", "name": "Pure Silk Material", "sku": "SILK-001", "price": 42.00 },
-      { "id": "wool_001", "name": "Merino Wool Blend", "sku": "WOOL-001", "price": 32.75 },
-      { "id": "nylon_001", "name": "Industrial Nylon", "sku": "NYL-001", "price": 17.25 }
+      { "id": "cotton_001", "manufacturer_id": "INT-COT-001", "price": 11.50 },
+      { "id": "silk_001", "manufacturer_id": "INT-SILK-001", "price": 42.00 },
+      { "id": "wool_001", "manufacturer_id": "INT-WOOL-001", "price": 32.75 },
+      { "id": "nylon_001", "manufacturer_id": "INT-NYL-001", "price": 17.25 }
     ],
     "machinery": [
-      { "id": "motor_001", "name": "Electric Motor 5HP", "sku": "MTR-001", "price": 425.00 },
-      { "id": "pump_001", "name": "Centrifugal Pump", "sku": "PUMP-001", "price": 300.00 },
-      { "id": "valve_001", "name": "Ball Valve 2 inch", "sku": "VALVE-001", "price": 70.50 },
-      { "id": "bearing_001", "name": "Ball Bearing Set", "sku": "BEAR-001", "price": 22.00 }
+      { "id": "motor_001", "manufacturer_id": "INT-MTR-001", "price": 425.00 },
+      { "id": "pump_001", "manufacturer_id": "INT-PUMP-001", "price": 300.00 },
+      { "id": "valve_001", "manufacturer_id": "INT-VALVE-001", "price": 70.50 },
+      { "id": "bearing_001", "manufacturer_id": "INT-BEAR-001", "price": 22.00 }
     ],
     "automotive": [
-      { "id": "brake_001", "name": "Brake Pads Front Set", "sku": "BRAKE-001", "price": 84.99 },
-      { "id": "filter_001", "name": "Air Filter Assembly", "sku": "FILT-001", "price": 21.99 },
-      { "id": "oil_001", "name": "Synthetic Motor Oil", "sku": "OIL-001", "price": 32.50 },
-      { "id": "tire_001", "name": "All-Season Tire", "sku": "TIRE-001", "price": 115.00 }
+      { "id": "brake_001", "manufacturer_id": "INT-BRAKE-001", "price": 84.99 },
+      { "id": "filter_001", "manufacturer_id": "INT-FILT-001", "price": 21.99 },
+      { "id": "oil_001", "manufacturer_id": "INT-OIL-001", "price": 32.50 },
+      { "id": "tire_001", "manufacturer_id": "INT-TIRE-001", "price": 115.00 }
     ]
   },
   "umbrella": {
     "electronics": [
-      { "id": "cpu_001", "name": "Intel Core i7 Processor", "sku": "CPU-001", "price": 339.99 },
-      { "id": "gpu_001", "name": "NVIDIA GeForce RTX 4080", "sku": "GPU-001", "price": 1299.99 },
-      { "id": "ram_001", "name": "32GB DDR4 Memory", "sku": "RAM-001", "price": 169.99 },
-      { "id": "ssd_001", "name": "1TB NVMe SSD", "sku": "SSD-001", "price": 99.99 }
+      { "id": "cpu_001", "manufacturer_id": "UMB-CPU-001", "price": 339.99 },
+      { "id": "gpu_001", "manufacturer_id": "UMB-GPU-001", "price": 1299.99 },
+      { "id": "ram_001", "manufacturer_id": "UMB-RAM-001", "price": 169.99 },
+      { "id": "ssd_001", "manufacturer_id": "UMB-SSD-001", "price": 99.99 }
     ],
     "chemicals": [
-      { "id": "acid_001", "name": "Sulfuric Acid 98%", "sku": "ACID-001", "price": 52.99 },
-      { "id": "base_001", "name": "Sodium Hydroxide", "sku": "BASE-001", "price": 38.50 },
-      { "id": "solvent_001", "name": "Acetone Industrial Grade", "sku": "SOLV-001", "price": 34.75 },
-      { "id": "catalyst_001", "name": "Platinum Catalyst", "sku": "CAT-001", "price": 925.00 }
+      { "id": "acid_001", "manufacturer_id": "UMB-ACID-001", "price": 52.99 },
+      { "id": "base_001", "manufacturer_id": "UMB-BASE-001", "price": 38.50 },
+      { "id": "solvent_001", "manufacturer_id": "UMB-SOLV-001", "price": 34.75 },
+      { "id": "catalyst_001", "manufacturer_id": "UMB-CAT-001", "price": 925.00 }
     ],
     "textiles": [
-      { "id": "cotton_001", "name": "Organic Cotton Fabric", "sku": "COT-001", "price": 14.50 },
-      { "id": "silk_001", "name": "Pure Silk Material", "sku": "SILK-001", "price": 52.00 },
-      { "id": "wool_001", "name": "Merino Wool Blend", "sku": "WOOL-001", "price": 42.75 },
-      { "id": "nylon_001", "name": "Industrial Nylon", "sku": "NYL-001", "price": 21.25 }
+      { "id": "cotton_001", "manufacturer_id": "UMB-COT-001", "price": 14.50 },
+      { "id": "silk_001", "manufacturer_id": "UMB-SILK-001", "price": 52.00 },
+      { "id": "wool_001", "manufacturer_id": "UMB-WOOL-001", "price": 42.75 },
+      { "id": "nylon_001", "manufacturer_id": "UMB-NYL-001", "price": 21.25 }
     ],
     "machinery": [
-      { "id": "motor_001", "name": "Electric Motor 5HP", "sku": "MTR-001", "price": 495.00 },
-      { "id": "pump_001", "name": "Centrifugal Pump", "sku": "PUMP-001", "price": 360.00 },
-      { "id": "valve_001", "name": "Ball Valve 2 inch", "sku": "VALVE-001", "price": 85.50 },
-      { "id": "bearing_001", "name": "Ball Bearing Set", "sku": "BEAR-001", "price": 32.00 }
+      { "id": "motor_001", "manufacturer_id": "UMB-MTR-001", "price": 495.00 },
+      { "id": "pump_001", "manufacturer_id": "UMB-PUMP-001", "price": 360.00 },
+      { "id": "valve_001", "manufacturer_id": "UMB-VALVE-001", "price": 85.50 },
+      { "id": "bearing_001", "manufacturer_id": "UMB-BEAR-001", "price": 32.00 }
     ],
     "automotive": [
-      { "id": "brake_001", "name": "Brake Pads Front Set", "sku": "BRAKE-001", "price": 99.99 },
-      { "id": "filter_001", "name": "Air Filter Assembly", "sku": "FILT-001", "price": 29.99 },
-      { "id": "oil_001", "name": "Synthetic Motor Oil", "sku": "OIL-001", "price": 42.50 },
-      { "id": "tire_001", "name": "All-Season Tire", "sku": "TIRE-001", "price": 145.00 }
+      { "id": "brake_001", "manufacturer_id": "UMB-BRAKE-001", "price": 99.99 },
+      { "id": "filter_001", "manufacturer_id": "UMB-FILT-001", "price": 29.99 },
+      { "id": "oil_001", "manufacturer_id": "UMB-OIL-001", "price": 42.50 },
+      { "id": "tire_001", "manufacturer_id": "UMB-TIRE-001", "price": 145.00 }
     ]
   },
   "wayne": {
     "electronics": [
-      { "id": "cpu_001", "name": "Intel Core i7 Processor", "sku": "CPU-001", "price": 309.99 },
-      { "id": "gpu_001", "name": "NVIDIA GeForce RTX 4080", "sku": "GPU-001", "price": 1229.99 },
-      { "id": "ram_001", "name": "32GB DDR4 Memory", "sku": "RAM-001", "price": 154.99 },
-      { "id": "ssd_001", "name": "1TB NVMe SSD", "sku": "SSD-001", "price": 92.99 }
+      { "id": "cpu_001", "manufacturer_id": "WYN-CPU-001", "price": 309.99 },
+      { "id": "gpu_001", "manufacturer_id": "WYN-GPU-001", "price": 1229.99 },
+      { "id": "ram_001", "manufacturer_id": "WYN-RAM-001", "price": 154.99 },
+      { "id": "ssd_001", "manufacturer_id": "WYN-SSD-001", "price": 92.99 }
     ],
     "chemicals": [
-      { "id": "acid_001", "name": "Sulfuric Acid 98%", "sku": "ACID-001", "price": 47.99 },
-      { "id": "base_001", "name": "Sodium Hydroxide", "sku": "BASE-001", "price": 33.50 },
-      { "id": "solvent_001", "name": "Acetone Industrial Grade", "sku": "SOLV-001", "price": 29.75 },
-      { "id": "catalyst_001", "name": "Platinum Catalyst", "sku": "CAT-001", "price": 875.00 }
+      { "id": "acid_001", "manufacturer_id": "WYN-ACID-001", "price": 47.99 },
+      { "id": "base_001", "manufacturer_id": "WYN-BASE-001", "price": 33.50 },
+      { "id": "solvent_001", "manufacturer_id": "WYN-SOLV-001", "price": 29.75 },
+      { "id": "catalyst_001", "manufacturer_id": "WYN-CAT-001", "price": 875.00 }
     ],
     "textiles": [
-      { "id": "cotton_001", "name": "Organic Cotton Fabric", "sku": "COT-001", "price": 13.00 },
-      { "id": "silk_001", "name": "Pure Silk Material", "sku": "SILK-001", "price": 46.00 },
-      { "id": "wool_001", "name": "Merino Wool Blend", "sku": "WOOL-001", "price": 36.75 },
-      { "id": "nylon_001", "name": "Industrial Nylon", "sku": "NYL-001", "price": 19.75 }
+      { "id": "cotton_001", "manufacturer_id": "WYN-COT-001", "price": 13.00 },
+      { "id": "silk_001", "manufacturer_id": "WYN-SILK-001", "price": 46.00 },
+      { "id": "wool_001", "manufacturer_id": "WYN-WOOL-001", "price": 36.75 },
+      { "id": "nylon_001", "manufacturer_id": "WYN-NYL-001", "price": 19.75 }
     ],
     "machinery": [
-      { "id": "motor_001", "name": "Electric Motor 5HP", "sku": "MTR-001", "price": 465.00 },
-      { "id": "pump_001", "name": "Centrifugal Pump", "sku": "PUMP-001", "price": 335.00 },
-      { "id": "valve_001", "name": "Ball Valve 2 inch", "sku": "VALVE-001", "price": 78.50 },
-      { "id": "bearing_001", "name": "Ball Bearing Set", "sku": "BEAR-001", "price": 26.00 }
+      { "id": "motor_001", "manufacturer_id": "WYN-MTR-001", "price": 465.00 },
+      { "id": "pump_001", "manufacturer_id": "WYN-PUMP-001", "price": 335.00 },
+      { "id": "valve_001", "manufacturer_id": "WYN-VALVE-001", "price": 78.50 },
+      { "id": "bearing_001", "manufacturer_id": "WYN-BEAR-001", "price": 26.00 }
     ],
     "automotive": [
-      { "id": "brake_001", "name": "Brake Pads Front Set", "sku": "BRAKE-001", "price": 92.99 },
-      { "id": "filter_001", "name": "Air Filter Assembly", "sku": "FILT-001", "price": 26.99 },
-      { "id": "oil_001", "name": "Synthetic Motor Oil", "sku": "OIL-001", "price": 37.50 },
-      { "id": "tire_001", "name": "All-Season Tire", "sku": "TIRE-001", "price": 130.00 }
+      { "id": "brake_001", "manufacturer_id": "WYN-BRAKE-001", "price": 92.99 },
+      { "id": "filter_001", "manufacturer_id": "WYN-FILT-001", "price": 26.99 },
+      { "id": "oil_001", "manufacturer_id": "WYN-OIL-001", "price": 37.50 },
+      { "id": "tire_001", "manufacturer_id": "WYN-TIRE-001", "price": 130.00 }
     ]
   }
 }

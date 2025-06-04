@@ -11,6 +11,18 @@ interface Product {
   id: string;
   name: string;
   sku: string;
+}
+
+interface ManufacturerProduct {
+  id: string;
+  manufacturer_id: string;
+  price: number;
+}
+
+interface OtherItem {
+  id: string;
+  name: string;
+  sku: string;
   price: number;
 }
 
@@ -20,34 +32,46 @@ interface OrderDetailsStepProps {
 }
 
 const OrderDetailsStep: React.FC<OrderDetailsStepProps> = ({ formData, updateFormData }) => {
-  const [availableProducts, setAvailableProducts] = useState<Product[]>([]);
-  const [otherItems, setOtherItems] = useState<Product[]>([]);
-  const [selectedProducts, setSelectedProducts] = useState<Product[]>([]);
+  const [allProducts, setAllProducts] = useState<(Product & { price: number })[]>([]);
+  const [otherItems, setOtherItems] = useState<OtherItem[]>([]);
 
   useEffect(() => {
     const loadProducts = async () => {
       if (!formData.manufacturer || !formData.productFamily) return;
 
       try {
-        const [manufacturerProductsRes, otherItemsRes] = await Promise.all([
+        const [productsRes, manufacturerProductsRes, otherItemsRes] = await Promise.all([
+          fetch('/src/data/products.json'),
           fetch('/src/data/manufacturer_products.json'),
           fetch('/src/data/other_items.json')
         ]);
         
-        const [manufacturerProductsData, otherItemsData] = await Promise.all([
+        const [productsData, manufacturerProductsData, otherItemsData] = await Promise.all([
+          productsRes.json(),
           manufacturerProductsRes.json(),
           otherItemsRes.json()
         ]);
 
-        const familyProducts = manufacturerProductsData[formData.manufacturer]?.[formData.productFamily] || [];
-        const manufacturerOtherItems = otherItemsData[formData.manufacturer] || [];
-        setAvailableProducts(familyProducts);
-        setOtherItems(manufacturerOtherItems);
+        // Get base products for the family
+        const familyProducts: Product[] = productsData[formData.productFamily] || [];
         
-        // Initialize selected products if they don't exist
-        if (selectedProducts.length === 0) {
-          setSelectedProducts([...familyProducts, ...manufacturerOtherItems]);
-        }
+        // Get manufacturer pricing for these products
+        const manufacturerProducts: ManufacturerProduct[] = manufacturerProductsData[formData.manufacturer]?.[formData.productFamily] || [];
+        
+        // Combine product info with pricing
+        const combinedProducts = familyProducts.map(product => {
+          const manufacturerProduct = manufacturerProducts.find(mp => mp.id === product.id);
+          return {
+            ...product,
+            price: manufacturerProduct?.price || 0
+          };
+        }).filter(product => product.price > 0);
+
+        // Get other items for this manufacturer
+        const manufacturerOtherItems: OtherItem[] = otherItemsData[formData.manufacturer] || [];
+        
+        setAllProducts(combinedProducts);
+        setOtherItems(manufacturerOtherItems);
       } catch (error) {
         console.error('Error loading products:', error);
       }
@@ -67,19 +91,18 @@ const OrderDetailsStep: React.FC<OrderDetailsStepProps> = ({ formData, updateFor
   };
 
   const removeProduct = (productId: string) => {
-    setSelectedProducts(prev => prev.filter(p => p.id !== productId));
     const updatedProducts = { ...formData.products };
     delete updatedProducts[productId];
     updateFormData({ products: updatedProducts });
   };
 
-  const calculateSubtotal = (product: Product) => {
+  const calculateSubtotal = (product: Product & { price: number }) => {
     const quantity = formData.products[product.id] || 0;
     return quantity * product.price;
   };
 
   const calculateTotal = () => {
-    return selectedProducts.reduce((total, product) => {
+    return [...allProducts, ...otherItems].reduce((total, product) => {
       return total + calculateSubtotal(product);
     }, 0);
   };
@@ -114,7 +137,7 @@ const OrderDetailsStep: React.FC<OrderDetailsStepProps> = ({ formData, updateFor
         {/* Regular Products */}
         <div className="space-y-4">
           <h5 className="font-medium text-gray-800">Standard Products</h5>
-          {availableProducts.map((product) => (
+          {allProducts.map((product) => (
             <div key={product.id} className="flex items-center gap-4 p-4 border rounded-lg">
               <div className="flex-1">
                 <div className="font-medium">{product.name}</div>
@@ -187,7 +210,7 @@ const OrderDetailsStep: React.FC<OrderDetailsStepProps> = ({ formData, updateFor
           </div>
         )}
 
-        {selectedProducts.length === 0 && (
+        {allProducts.length === 0 && otherItems.length === 0 && (
           <div className="text-center py-8 text-gray-500">
             No products available for the selected manufacturer and product family.
           </div>
@@ -206,7 +229,7 @@ const OrderDetailsStep: React.FC<OrderDetailsStepProps> = ({ formData, updateFor
             ) : (
               <>
                 <div className="space-y-3">
-                  {selectedProducts
+                  {[...allProducts, ...otherItems]
                     .filter(product => formData.products[product.id] > 0)
                     .map((product) => (
                       <div key={product.id} className="flex justify-between text-sm">

@@ -1,4 +1,3 @@
-
 import { FormData } from '../components/FormWizard';
 import { PurchaseOrder, PurchaseOrderSchema } from '../schemas/purchaseOrderSchema';
 
@@ -7,18 +6,20 @@ export const transformFormDataToPurchaseOrder = async (
   poNumber: string
 ): Promise<PurchaseOrder> => {
   // Load lookup data
-  const [companyInfoRes, manufacturerContactsRes, shipToContactsRes, manufacturerProductsRes, otherItemsRes] = await Promise.all([
+  const [companyInfoRes, manufacturerContactsRes, shipToContactsRes, productsRes, manufacturerProductsRes, otherItemsRes] = await Promise.all([
     fetch('/src/data/company_info.json'),
     fetch('/src/data/manufacturer_contacts.json'),
     fetch('/src/data/ship_to_contacts.json'),
+    fetch('/src/data/products.json'),
     fetch('/src/data/manufacturer_products.json'),
     fetch('/src/data/other_items.json')
   ]);
 
-  const [companyInfo, manufacturerContacts, shipToContacts, manufacturerProducts, otherItems] = await Promise.all([
+  const [companyInfo, manufacturerContacts, shipToContacts, productsData, manufacturerProductsData, otherItemsData] = await Promise.all([
     companyInfoRes.json(),
     manufacturerContactsRes.json(),
     shipToContactsRes.json(),
+    productsRes.json(),
     manufacturerProductsRes.json(),
     otherItemsRes.json()
   ]);
@@ -28,23 +29,40 @@ export const transformFormDataToPurchaseOrder = async (
   const shipTo = shipToContacts[formData.shipTo];
   
   // Get all products to build items array
-  const familyProducts = manufacturerProducts[formData.manufacturer]?.[formData.productFamily] || [];
-  const manufacturerOtherItems = otherItems[formData.manufacturer] || [];
-  const allProducts = [...familyProducts, ...manufacturerOtherItems];
+  const familyProducts = productsData[formData.productFamily] || [];
+  const manufacturerProducts = manufacturerProductsData[formData.manufacturer]?.[formData.productFamily] || [];
+  const manufacturerOtherItems = otherItemsData[formData.manufacturer] || [];
 
   const items = Object.entries(formData.products)
     .filter(([_, quantity]) => quantity > 0)
     .map(([productId, quantity]) => {
-      const product = allProducts.find(p => p.id === productId);
-      if (!product) throw new Error(`Product ${productId} not found`);
+      // Check if it's a standard product
+      const baseProduct = familyProducts.find(p => p.id === productId);
+      if (baseProduct) {
+        const manufacturerProduct = manufacturerProducts.find(mp => mp.id === productId);
+        if (!manufacturerProduct) throw new Error(`Manufacturer product ${productId} not found`);
+        
+        return {
+          item_number: manufacturerProduct.manufacturer_id,
+          quantity,
+          description: baseProduct.name,
+          barcode: "", // Default empty, will be added when needed
+          unit_price: manufacturerProduct.price,
+          total: quantity * manufacturerProduct.price
+        };
+      }
+      
+      // Check if it's an other item
+      const otherItem = manufacturerOtherItems.find(p => p.id === productId);
+      if (!otherItem) throw new Error(`Product ${productId} not found`);
       
       return {
-        item_number: product.sku,
+        item_number: otherItem.sku,
         quantity,
-        description: product.name,
+        description: otherItem.name,
         barcode: "", // Default empty
-        unit_price: product.price,
-        total: quantity * product.price
+        unit_price: otherItem.price,
+        total: quantity * otherItem.price
       };
     });
 
@@ -53,25 +71,28 @@ export const transformFormDataToPurchaseOrder = async (
 
   // Build packaging instructions
   const packagingInstructions = [];
-  if (formData.packageInstructions.bottle) {
-    packagingInstructions.push({
-      component: "bottle",
-      instructions: formData.packageInstructions.bottle
-    });
-  }
-  if (formData.packageInstructions.bottleTop) {
-    packagingInstructions.push({
-      component: "bottle_top", 
-      instructions: formData.packageInstructions.bottleTop
-    });
-  }
-  // Add custom packaging fields
-  formData.packageInstructions.customFields.forEach(field => {
-    packagingInstructions.push({
-      component: field.label.toLowerCase().replace(/\s+/g, '_'),
-      instructions: field.value
-    });
+  
+  // Add configured package instructions
+  Object.entries(formData.packageInstructions).forEach(([key, value]) => {
+    if (value && key !== 'customFields') {
+      packagingInstructions.push({
+        component: key,
+        instructions: value
+      });
+    }
   });
+  
+  // Add custom packaging fields
+  if (formData.packageInstructions.customFields) {
+    formData.packageInstructions.customFields.forEach(field => {
+      if (field.label && field.value) {
+        packagingInstructions.push({
+          component: field.label.toLowerCase().replace(/\s+/g, '_'),
+          instructions: field.value
+        });
+      }
+    });
+  }
 
   // Build annexed items from extra fields
   const annexItems = formData.extraFields.map(field => ({

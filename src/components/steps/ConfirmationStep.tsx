@@ -166,10 +166,10 @@ const ConfirmationStep: React.FC<ConfirmationStepProps> = ({ formData, onFormSub
     return (
       <div className="text-center py-8">
         <CheckCircle className="h-16 w-16 text-green-600 mx-auto mb-4" />
-        <h3 className="text-2xl font-bold text-green-600 mb-2">Order Submitted Successfully!</h3>
-        <p className="text-gray-600">Your order has been logged and submitted to the endpoint.</p>
-        <p className="text-sm text-gray-500 mt-2">Check the console for the full form data.</p>
-        <p className="text-sm text-gray-600 mt-4">Use the "Go to Home" button above to start a new order.</p>
+        <h3 className="text-2xl font-bold text-green-600 mb-2">🎉 Order Submitted Successfully!</h3>
+        <p className="text-gray-600 mb-4">Your order has been processed and sent to the manufacturer.</p>
+        <p className="text-sm text-gray-500 mt-2">Thank you for your business!</p>
+        <p className="text-sm text-gray-600 mt-4">Ready to create another order? Click "Start New Order" above.</p>
       </div>
     );
   }

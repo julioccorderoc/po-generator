@@ -1,5 +1,4 @@
-
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
@@ -7,12 +6,34 @@ import { Button } from '@/components/ui/button';
 import { Plus, Trash2 } from 'lucide-react';
 import { FormData } from '../FormWizard';
 
+interface PackageInstruction {
+  id: string;
+  label: string;
+  placeholder: string;
+}
+
 interface RemarksStepProps {
   formData: FormData;
   updateFormData: (data: Partial<FormData>) => void;
 }
 
 const RemarksStep: React.FC<RemarksStepProps> = ({ formData, updateFormData }) => {
+  const [packageInstructions, setPackageInstructions] = useState<PackageInstruction[]>([]);
+
+  useEffect(() => {
+    const loadPackageInstructions = async () => {
+      try {
+        const response = await fetch('/src/data/package_instructions.json');
+        const instructions = await response.json();
+        setPackageInstructions(instructions);
+      } catch (error) {
+        console.error('Error loading package instructions:', error);
+      }
+    };
+
+    loadPackageInstructions();
+  }, []);
+
   const addCustomField = () => {
     const updatedInstructions = {
       ...formData.packageInstructions,
@@ -44,6 +65,14 @@ const RemarksStep: React.FC<RemarksStepProps> = ({ formData, updateFormData }) =
     updateFormData({ packageInstructions: updatedInstructions });
   };
 
+  const updatePackageInstruction = (id: string, value: string) => {
+    const updatedInstructions = {
+      ...formData.packageInstructions,
+      [id]: value
+    };
+    updateFormData({ packageInstructions: updatedInstructions });
+  };
+
   return (
     <div className="space-y-8">
       {/* Remarks Section */}
@@ -63,35 +92,17 @@ const RemarksStep: React.FC<RemarksStepProps> = ({ formData, updateFormData }) =
         <h4 className="text-lg font-medium">Package Instructions</h4>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="bottle">Bottle</Label>
-            <Input
-              id="bottle"
-              value={formData.packageInstructions.bottle}
-              onChange={(e) => updateFormData({
-                packageInstructions: {
-                  ...formData.packageInstructions,
-                  bottle: e.target.value
-                }
-              })}
-              placeholder="Bottle specifications"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="bottleTop">Bottle Top</Label>
-            <Input
-              id="bottleTop"
-              value={formData.packageInstructions.bottleTop}
-              onChange={(e) => updateFormData({
-                packageInstructions: {
-                  ...formData.packageInstructions,
-                  bottleTop: e.target.value
-                }
-              })}
-              placeholder="Bottle top specifications"
-            />
-          </div>
+          {packageInstructions.map((instruction) => (
+            <div key={instruction.id} className="space-y-2">
+              <Label htmlFor={instruction.id}>{instruction.label}</Label>
+              <Input
+                id={instruction.id}
+                value={formData.packageInstructions[instruction.id] || ''}
+                onChange={(e) => updatePackageInstruction(instruction.id, e.target.value)}
+                placeholder={instruction.placeholder}
+              />
+            </div>
+          ))}
         </div>
 
         {/* Custom Fields */}

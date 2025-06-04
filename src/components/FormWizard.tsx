@@ -124,7 +124,7 @@ const FormWizard: React.FC<FormWizardProps> = ({ onCancel }) => {
                 className="text-red-600 hover:text-red-700 hover:bg-red-50"
               >
                 <X className="h-4 w-4 mr-2" />
-                {isSubmitted ? 'Go to Home' : 'Cancel'}
+                {isSubmitted ? 'Start New Order' : 'Cancel'}
               </Button>
             </div>
           </div>

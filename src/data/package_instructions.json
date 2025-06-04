@@ -1,0 +1,23 @@
+
+[
+  {
+    "id": "bottle",
+    "label": "Bottle",
+    "placeholder": "Bottle specifications"
+  },
+  {
+    "id": "bottleTop",
+    "label": "Bottle Top",
+    "placeholder": "Bottle top specifications"
+  },
+  {
+    "id": "packaging",
+    "label": "Packaging",
+    "placeholder": "Packaging requirements"
+  },
+  {
+    "id": "labeling",
+    "label": "Labeling",
+    "placeholder": "Labeling instructions"
+  }
+]
