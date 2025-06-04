@@ -5,14 +5,15 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { CheckCircle, Send, AlertCircle } from 'lucide-react';
 import { FormData } from '../FormWizard';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 import { formConfig } from '@/config/formConfig';
 
 interface ConfirmationStepProps {
   formData: FormData;
+  onFormSubmitted: () => void;
 }
 
-const ConfirmationStep: React.FC<ConfirmationStepProps> = ({ formData }) => {
+const ConfirmationStep: React.FC<ConfirmationStepProps> = ({ formData, onFormSubmitted }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -38,6 +39,7 @@ const ConfirmationStep: React.FC<ConfirmationStepProps> = ({ formData }) => {
       
       console.log('Submission successful');
       setIsSubmitted(true);
+      onFormSubmitted(); // Notify parent component
       toast({
         title: "Success!",
         description: "Your order has been submitted successfully.",
@@ -62,6 +64,7 @@ const ConfirmationStep: React.FC<ConfirmationStepProps> = ({ formData }) => {
         <h3 className="text-2xl font-bold text-green-600 mb-2">Order Submitted Successfully!</h3>
         <p className="text-gray-600">Your order has been logged and submitted to the endpoint.</p>
         <p className="text-sm text-gray-500 mt-2">Check the console for the full form data.</p>
+        <p className="text-sm text-gray-600 mt-4">Use the "Go to Home" button above to start a new order.</p>
       </div>
     );
   }

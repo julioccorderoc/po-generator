@@ -34,6 +34,7 @@ interface FormWizardProps {
 
 const FormWizard: React.FC<FormWizardProps> = ({ onCancel }) => {
   const [currentStep, setCurrentStep] = useState(1);
+  const [isSubmitted, setIsSubmitted] = useState(false);
   const [formData, setFormData] = useState<FormData>({
     manufacturer: '',
     shipTo: '',
@@ -65,9 +66,13 @@ const FormWizard: React.FC<FormWizardProps> = ({ onCancel }) => {
   };
 
   const prevStep = () => {
-    if (currentStep > 1) {
+    if (currentStep > 1 && !isSubmitted) {
       setCurrentStep(currentStep - 1);
     }
+  };
+
+  const handleFormSubmitted = () => {
+    setIsSubmitted(true);
   };
 
   const renderStep = () => {
@@ -83,7 +88,7 @@ const FormWizard: React.FC<FormWizardProps> = ({ onCancel }) => {
       case 5:
         return <ExtraStep formData={formData} updateFormData={updateFormData} />;
       case 6:
-        return <ConfirmationStep formData={formData} />;
+        return <ConfirmationStep formData={formData} onFormSubmitted={handleFormSubmitted} />;
       default:
         return null;
     }
@@ -118,7 +123,7 @@ const FormWizard: React.FC<FormWizardProps> = ({ onCancel }) => {
                 className="text-red-600 hover:text-red-700 hover:bg-red-50"
               >
                 <X className="h-4 w-4 mr-2" />
-                Cancel
+                {isSubmitted ? 'Go to Home' : 'Cancel'}
               </Button>
             </div>
           </div>
@@ -156,7 +161,7 @@ const FormWizard: React.FC<FormWizardProps> = ({ onCancel }) => {
           {renderStep()}
           
           {/* Navigation buttons */}
-          {currentStep < totalSteps && (
+          {currentStep < totalSteps && !isSubmitted && (
             <div className="flex justify-between mt-8">
               <Button
                 variant="outline"
@@ -173,8 +178,8 @@ const FormWizard: React.FC<FormWizardProps> = ({ onCancel }) => {
             </div>
           )}
 
-          {/* Back button for confirmation step */}
-          {currentStep === totalSteps && (
+          {/* Back button for confirmation step - only show if not submitted */}
+          {currentStep === totalSteps && !isSubmitted && (
             <div className="flex justify-start mt-8">
               <Button
                 variant="outline"
