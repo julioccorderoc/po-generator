@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { FormData } from '../FormWizard';
+import { formConfig } from '@/config/formConfig';
 
 interface Option {
   id: string;
@@ -49,13 +50,16 @@ const ManufacturingStep: React.FC<ManufacturingStepProps> = ({ formData, updateF
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-2">
-          <Label htmlFor="manufacturer">Manufacturer</Label>
+          <Label htmlFor="manufacturer">
+            {formConfig.fields.manufacturer.label}
+            {formConfig.fields.manufacturer.required && <span className="text-red-500 ml-1">*</span>}
+          </Label>
           <Select
             value={formData.manufacturer}
             onValueChange={(value) => updateFormData({ manufacturer: value })}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Select manufacturer" />
+              <SelectValue placeholder={formConfig.fields.manufacturer.placeholder} />
             </SelectTrigger>
             <SelectContent>
               {manufacturers.map((option) => (
@@ -68,13 +72,16 @@ const ManufacturingStep: React.FC<ManufacturingStepProps> = ({ formData, updateF
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="shipTo">Ship To</Label>
+          <Label htmlFor="shipTo">
+            {formConfig.fields.shipTo.label}
+            {formConfig.fields.shipTo.required && <span className="text-red-500 ml-1">*</span>}
+          </Label>
           <Select
             value={formData.shipTo}
             onValueChange={(value) => updateFormData({ shipTo: value })}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Select shipping destination" />
+              <SelectValue placeholder={formConfig.fields.shipTo.placeholder} />
             </SelectTrigger>
             <SelectContent>
               {shipToOptions.map((option) => (
@@ -87,13 +94,16 @@ const ManufacturingStep: React.FC<ManufacturingStepProps> = ({ formData, updateF
         </div>
 
         <div className="space-y-2 md:col-span-2">
-          <Label htmlFor="authorizedBy">Authorized By</Label>
+          <Label htmlFor="authorizedBy">
+            {formConfig.fields.authorizedBy.label}
+            {formConfig.fields.authorizedBy.required && <span className="text-red-500 ml-1">*</span>}
+          </Label>
           <Select
             value={formData.authorizedBy}
             onValueChange={(value) => updateFormData({ authorizedBy: value })}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Select authorizing person" />
+              <SelectValue placeholder={formConfig.fields.authorizedBy.placeholder} />
             </SelectTrigger>
             <SelectContent>
               {authorizedByOptions.map((option) => (

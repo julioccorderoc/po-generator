@@ -6,6 +6,7 @@ import { Separator } from '@/components/ui/separator';
 import { CheckCircle, Send, AlertCircle } from 'lucide-react';
 import { FormData } from '../FormWizard';
 import { useToast } from '@/components/ui/use-toast';
+import { formConfig } from '@/config/formConfig';
 
 interface ConfirmationStepProps {
   formData: FormData;
@@ -25,8 +26,8 @@ const ConfirmationStep: React.FC<ConfirmationStepProps> = ({ formData }) => {
     console.log('Form Data:', JSON.stringify(formData, null, 2));
     
     try {
-      // POST to the endpoint
-      const response = await fetch('https://juliotest.requestcatcher.com/test', {
+      // POST to the configured endpoint
+      const response = await fetch(formConfig.endpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
