@@ -1,6 +1,0 @@
-
-[
-  { "id": "custom_001", "name": "Globodyne Advanced Module", "sku": "GLB-AM-001", "price": 125.99 },
-  { "id": "custom_002", "name": "Globodyne Premium Support", "sku": "GLB-PS-002", "price": 200.00 },
-  { "id": "custom_003", "name": "Globodyne Custom Solution", "sku": "GLB-CS-003", "price": 350.00 }
-]

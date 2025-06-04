@@ -1,0 +1,48 @@
+
+{
+  "warehouse_a": {
+    "name": "Warehouse A Manager",
+    "title": "Warehouse Supervisor",
+    "company_name": "Our Company Inc.",
+    "address_line1": "100 Storage Lane",
+    "address_line2": "New York, NY 10001",
+    "tel": "+1-212-555-0100",
+    "email": "warehouse-a@ourcompany.com"
+  },
+  "warehouse_b": {
+    "name": "Warehouse B Manager",
+    "title": "Warehouse Supervisor",
+    "company_name": "Our Company Inc.",
+    "address_line1": "200 Distribution Ave",
+    "address_line2": "Los Angeles, CA 90210",
+    "tel": "+1-310-555-0200",
+    "email": "warehouse-b@ourcompany.com"
+  },
+  "warehouse_c": {
+    "name": "Warehouse C Manager",
+    "title": "Warehouse Supervisor", 
+    "company_name": "Our Company Inc.",
+    "address_line1": "300 Logistics Blvd",
+    "address_line2": "Chicago, IL 60601",
+    "tel": "+1-312-555-0300",
+    "email": "warehouse-c@ourcompany.com"
+  },
+  "distribution_center": {
+    "name": "Distribution Center Manager",
+    "title": "Operations Director",
+    "company_name": "Our Company Inc.",
+    "address_line1": "500 Main Distribution Hub",
+    "address_line2": "Dallas, TX 75201",
+    "tel": "+1-214-555-0500",
+    "email": "distribution@ourcompany.com"
+  },
+  "retail_store": {
+    "name": "Retail Network Coordinator",
+    "title": "Retail Operations Manager",
+    "company_name": "Our Company Inc.",
+    "address_line1": "600 Retail Network Center",
+    "address_line2": "Atlanta, GA 30301",
+    "tel": "+1-404-555-0600",
+    "email": "retail@ourcompany.com"
+  }
+}

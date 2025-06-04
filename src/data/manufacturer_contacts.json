@@ -1,0 +1,48 @@
+
+{
+  "acme": {
+    "name": "ACME Manufacturing Co.",
+    "title": "Sales Director",
+    "company_name": "ACME Manufacturing Co.",
+    "address_line1": "123 Industrial Blvd",
+    "address_line2": "Suite 400",
+    "tel": "+1-555-0123",
+    "email": "sales@acme-manufacturing.com"
+  },
+  "globodyne": {
+    "name": "Globodyne Corporation",
+    "title": "Account Manager",
+    "company_name": "Globodyne Corporation",
+    "address_line1": "456 Corporate Plaza",
+    "address_line2": "Floor 12",
+    "tel": "+1-555-0456",
+    "email": "orders@globodyne.com"
+  },
+  "initech": {
+    "name": "Initech Solutions",
+    "title": "Business Development",
+    "company_name": "Initech Solutions",
+    "address_line1": "789 Tech Park Drive",
+    "address_line2": "Building C",
+    "tel": "+1-555-0789",
+    "email": "bd@initech.com"
+  },
+  "umbrella": {
+    "name": "Umbrella Corporation",
+    "title": "Strategic Partnerships",
+    "company_name": "Umbrella Corporation",
+    "address_line1": "999 Raccoon Street",
+    "address_line2": "Executive Tower",
+    "tel": "+1-555-0999",
+    "email": "partnerships@umbrella-corp.com"
+  },
+  "wayne": {
+    "name": "Wayne Enterprises",
+    "title": "Procurement Manager",
+    "company_name": "Wayne Enterprises",
+    "address_line1": "1007 Mountain Drive",
+    "address_line2": "Wayne Tower",
+    "tel": "+1-555-1007",
+    "email": "procurement@wayne-enterprises.com"
+  }
+}

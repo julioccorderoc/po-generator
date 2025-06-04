@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,6 +7,8 @@ import { FormData } from '../FormWizard';
 import { useToast } from '@/hooks/use-toast';
 import { formConfig } from '@/config/formConfig';
 import EmailModal from '../EmailModal';
+import { formatMoney, formatNumber } from '@/utils/formatters';
+import { transformFormDataToPurchaseOrder } from '@/utils/dataTransform';
 
 interface Product {
   id: string;
@@ -36,7 +37,7 @@ const ConfirmationStep: React.FC<ConfirmationStepProps> = ({ formData, onFormSub
       try {
         const [manufacturerProductsRes, otherItemsRes] = await Promise.all([
           fetch('/src/data/manufacturer_products.json'),
-          fetch(`/src/data/other_items/${formData.manufacturer}_other_items.json`)
+          fetch('/src/data/other_items.json')
         ]);
         
         const [manufacturerProductsData, otherItemsData] = await Promise.all([
@@ -45,7 +46,8 @@ const ConfirmationStep: React.FC<ConfirmationStepProps> = ({ formData, onFormSub
         ]);
 
         const familyProducts = manufacturerProductsData[formData.manufacturer]?.[formData.productFamily] || [];
-        setAllProducts([...familyProducts, ...otherItemsData]);
+        const manufacturerOtherItems = otherItemsData[formData.manufacturer] || [];
+        setAllProducts([...familyProducts, ...manufacturerOtherItems]);
       } catch (error) {
         console.error('Error loading products:', error);
       }
@@ -119,8 +121,11 @@ const ConfirmationStep: React.FC<ConfirmationStepProps> = ({ formData, onFormSub
       const poNumber = await generatePONumber();
       const formDataWithEmail = { ...formData, email };
       
-      // Log to console
-      console.log('Form Data:', JSON.stringify(formDataWithEmail, null, 2));
+      // Transform and validate data
+      const validatedPurchaseOrder = await transformFormDataToPurchaseOrder(formDataWithEmail, poNumber.toString());
+      
+      // Log the validated purchase order
+      console.log('Validated Purchase Order:', JSON.stringify(validatedPurchaseOrder, null, 2));
       
       // POST to the configured endpoint
       const response = await fetch(formConfig.endpoint, {
@@ -128,7 +133,7 @@ const ConfirmationStep: React.FC<ConfirmationStepProps> = ({ formData, onFormSub
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formDataWithEmail),
+        body: JSON.stringify(validatedPurchaseOrder),
         mode: 'no-cors'
       });
       
@@ -184,7 +189,7 @@ const ConfirmationStep: React.FC<ConfirmationStepProps> = ({ formData, onFormSub
           <CardTitle className="text-lg flex justify-between items-center">
             <span>Order Total</span>
             <span className="text-2xl font-bold text-green-600">
-              ${calculateTotal().toFixed(2)}
+              {formatMoney(calculateTotal())}
             </span>
           </CardTitle>
         </CardHeader>
@@ -196,8 +201,8 @@ const ConfirmationStep: React.FC<ConfirmationStepProps> = ({ formData, onFormSub
               
               return (
                 <div key={productId} className="flex justify-between text-sm">
-                  <span>{product.name} (×{quantity})</span>
-                  <span>${calculateSubtotal(productId).toFixed(2)}</span>
+                  <span>{product.name} (×{formatNumber(quantity)})</span>
+                  <span>{formatMoney(calculateSubtotal(productId))}</span>
                 </div>
               );
             })}
@@ -249,7 +254,7 @@ const ConfirmationStep: React.FC<ConfirmationStepProps> = ({ formData, onFormSub
                 return (
                   <div key={productId} className="flex justify-between text-sm">
                     <span>{product.name} ({product.sku})</span>
-                    <span>Quantity: {quantity} × ${product.price.toFixed(2)} = ${calculateSubtotal(productId).toFixed(2)}</span>
+                    <span>Quantity: {formatNumber(quantity)} × {formatMoney(product.price)} = {formatMoney(calculateSubtotal(productId))}</span>
                   </div>
                 );
               })}

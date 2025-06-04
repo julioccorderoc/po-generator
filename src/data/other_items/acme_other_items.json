@@ -1,6 +1,0 @@
-
-[
-  { "id": "custom_001", "name": "ACME Custom Widget", "sku": "ACM-CW-001", "price": 45.99 },
-  { "id": "custom_002", "name": "ACME Special Tool", "sku": "ACM-ST-002", "price": 89.50 },
-  { "id": "custom_003", "name": "ACME Premium Service", "sku": "ACM-PS-003", "price": 150.00 }
-]

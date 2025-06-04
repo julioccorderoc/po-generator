@@ -1,6 +1,0 @@
-
-[
-  { "id": "custom_001", "name": "Umbrella Bio Enhancement", "sku": "UMB-BE-001", "price": 299.99 },
-  { "id": "custom_002", "name": "Umbrella Security Protocol", "sku": "UMB-SP-002", "price": 450.00 },
-  { "id": "custom_003", "name": "Umbrella Research License", "sku": "UMB-RL-003", "price": 750.00 }
-]

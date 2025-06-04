@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Trash2 } from 'lucide-react';
 import { FormData } from '../FormWizard';
+import { formatMoney, formatNumber } from '@/utils/formatters';
 
 interface Product {
   id: string;
@@ -30,7 +31,7 @@ const OrderDetailsStep: React.FC<OrderDetailsStepProps> = ({ formData, updateFor
       try {
         const [manufacturerProductsRes, otherItemsRes] = await Promise.all([
           fetch('/src/data/manufacturer_products.json'),
-          fetch(`/src/data/other_items/${formData.manufacturer}_other_items.json`)
+          fetch('/src/data/other_items.json')
         ]);
         
         const [manufacturerProductsData, otherItemsData] = await Promise.all([
@@ -39,12 +40,13 @@ const OrderDetailsStep: React.FC<OrderDetailsStepProps> = ({ formData, updateFor
         ]);
 
         const familyProducts = manufacturerProductsData[formData.manufacturer]?.[formData.productFamily] || [];
+        const manufacturerOtherItems = otherItemsData[formData.manufacturer] || [];
         setAvailableProducts(familyProducts);
-        setOtherItems(otherItemsData);
+        setOtherItems(manufacturerOtherItems);
         
         // Initialize selected products if they don't exist
         if (selectedProducts.length === 0) {
-          setSelectedProducts([...familyProducts, ...otherItemsData]);
+          setSelectedProducts([...familyProducts, ...manufacturerOtherItems]);
         }
       } catch (error) {
         console.error('Error loading products:', error);
@@ -117,7 +119,7 @@ const OrderDetailsStep: React.FC<OrderDetailsStepProps> = ({ formData, updateFor
               <div className="flex-1">
                 <div className="font-medium">{product.name}</div>
                 <div className="text-sm text-gray-500">SKU: {product.sku}</div>
-                <div className="text-sm font-medium text-green-600">${product.price.toFixed(2)}</div>
+                <div className="text-sm font-medium text-green-600">{formatMoney(product.price)}</div>
               </div>
               
               <div className="flex items-center gap-2">
@@ -155,7 +157,7 @@ const OrderDetailsStep: React.FC<OrderDetailsStepProps> = ({ formData, updateFor
                 <div className="flex-1">
                   <div className="font-medium">{product.name}</div>
                   <div className="text-sm text-gray-500">SKU: {product.sku}</div>
-                  <div className="text-sm font-medium text-green-600">${product.price.toFixed(2)}</div>
+                  <div className="text-sm font-medium text-green-600">{formatMoney(product.price)}</div>
                 </div>
                 
                 <div className="flex items-center gap-2">
@@ -211,11 +213,11 @@ const OrderDetailsStep: React.FC<OrderDetailsStepProps> = ({ formData, updateFor
                         <div>
                           <div className="font-medium">{product.name}</div>
                           <div className="text-gray-500">
-                            {formData.products[product.id]} × ${product.price.toFixed(2)}
+                            {formatNumber(formData.products[product.id])} × {formatMoney(product.price)}
                           </div>
                         </div>
                         <div className="font-medium">
-                          ${calculateSubtotal(product).toFixed(2)}
+                          {formatMoney(calculateSubtotal(product))}
                         </div>
                       </div>
                     ))}
@@ -223,7 +225,7 @@ const OrderDetailsStep: React.FC<OrderDetailsStepProps> = ({ formData, updateFor
                 <hr />
                 <div className="flex justify-between font-bold text-lg">
                   <span>Total:</span>
-                  <span className="text-green-600">${calculateTotal().toFixed(2)}</span>
+                  <span className="text-green-600">{formatMoney(calculateTotal())}</span>
                 </div>
               </>
             )}

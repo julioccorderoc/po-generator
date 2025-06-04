@@ -1,0 +1,28 @@
+
+{
+  "acme": [
+    { "id": "custom_001", "name": "ACME Custom Widget", "sku": "ACM-CW-001", "price": 45.99 },
+    { "id": "custom_002", "name": "ACME Special Tool", "sku": "ACM-ST-002", "price": 89.50 },
+    { "id": "custom_003", "name": "ACME Premium Service", "sku": "ACM-PS-003", "price": 150.00 }
+  ],
+  "globodyne": [
+    { "id": "custom_001", "name": "Globodyne Advanced Module", "sku": "GLB-AM-001", "price": 125.99 },
+    { "id": "custom_002", "name": "Globodyne Premium Support", "sku": "GLB-PS-002", "price": 200.00 },
+    { "id": "custom_003", "name": "Globodyne Custom Solution", "sku": "GLB-CS-003", "price": 350.00 }
+  ],
+  "initech": [
+    { "id": "custom_001", "name": "Initech Efficiency Booster", "sku": "INT-EB-001", "price": 75.99 },
+    { "id": "custom_002", "name": "Initech Quality Assurance", "sku": "INT-QA-002", "price": 120.00 },
+    { "id": "custom_003", "name": "Initech Training Package", "sku": "INT-TP-003", "price": 180.00 }
+  ],
+  "umbrella": [
+    { "id": "custom_001", "name": "Umbrella Bio Enhancement", "sku": "UMB-BE-001", "price": 299.99 },
+    { "id": "custom_002", "name": "Umbrella Security Protocol", "sku": "UMB-SP-002", "price": 450.00 },
+    { "id": "custom_003", "name": "Umbrella Research License", "sku": "UMB-RL-003", "price": 750.00 }
+  ],
+  "wayne": [
+    { "id": "custom_001", "name": "Wayne Tech Innovation", "sku": "WYN-TI-001", "price": 199.99 },
+    { "id": "custom_002", "name": "Wayne Advanced Security", "sku": "WYN-AS-002", "price": 399.00 },
+    { "id": "custom_003", "name": "Wayne Executive Package", "sku": "WYN-EP-003", "price": 599.00 }
+  ]
+}

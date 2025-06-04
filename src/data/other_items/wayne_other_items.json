@@ -1,6 +1,0 @@
-
-[
-  { "id": "custom_001", "name": "Wayne Tech Innovation", "sku": "WYN-TI-001", "price": 199.99 },
-  { "id": "custom_002", "name": "Wayne Advanced Security", "sku": "WYN-AS-002", "price": 399.00 },
-  { "id": "custom_003", "name": "Wayne Executive Package", "sku": "WYN-EP-003", "price": 599.00 }
-]
