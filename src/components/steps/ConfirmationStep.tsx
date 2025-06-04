@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
@@ -7,6 +7,14 @@ import { CheckCircle, Send, AlertCircle } from 'lucide-react';
 import { FormData } from '../FormWizard';
 import { useToast } from '@/hooks/use-toast';
 import { formConfig } from '@/config/formConfig';
+import EmailModal from '../EmailModal';
+
+interface Product {
+  id: string;
+  name: string;
+  sku: string;
+  price: number;
+}
 
 interface ConfirmationStepProps {
   formData: FormData;
@@ -17,32 +25,124 @@ const ConfirmationStep: React.FC<ConfirmationStepProps> = ({ formData, onFormSub
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [showEmailModal, setShowEmailModal] = useState(false);
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
   const { toast } = useToast();
 
-  const handleSubmit = async () => {
+  useEffect(() => {
+    const loadProducts = async () => {
+      if (!formData.manufacturer || !formData.productFamily) return;
+
+      try {
+        const [manufacturerProductsRes, otherItemsRes] = await Promise.all([
+          fetch('/src/data/manufacturer_products.json'),
+          fetch(`/src/data/other_items/${formData.manufacturer}_other_items.json`)
+        ]);
+        
+        const [manufacturerProductsData, otherItemsData] = await Promise.all([
+          manufacturerProductsRes.json(),
+          otherItemsRes.json()
+        ]);
+
+        const familyProducts = manufacturerProductsData[formData.manufacturer]?.[formData.productFamily] || [];
+        setAllProducts([...familyProducts, ...otherItemsData]);
+      } catch (error) {
+        console.error('Error loading products:', error);
+      }
+    };
+
+    loadProducts();
+  }, [formData.manufacturer, formData.productFamily]);
+
+  const calculateSubtotal = (productId: string) => {
+    const product = allProducts.find(p => p.id === productId);
+    const quantity = formData.products[productId] || 0;
+    return product ? quantity * product.price : 0;
+  };
+
+  const calculateTotal = () => {
+    return Object.keys(formData.products).reduce((total, productId) => {
+      return total + calculateSubtotal(productId);
+    }, 0);
+  };
+
+  const generatePONumber = async () => {
+    try {
+      const response = await fetch('/src/data/pos.json');
+      const existingPOs = await response.json();
+      return existingPOs.length + 1;
+    } catch (error) {
+      console.error('Error loading POs:', error);
+      return 1;
+    }
+  };
+
+  const savePO = async (email: string, poNumber: number) => {
+    try {
+      const response = await fetch('/src/data/pos.json');
+      const existingPOs = await response.json();
+      
+      const newPO = {
+        poNumber,
+        total: calculateTotal(),
+        manufacturer: formData.manufacturer,
+        creationDate: new Date().toISOString(),
+        expectedArrival: formData.estimatedDelivery ? formData.estimatedDelivery.toISOString() : null,
+        createdBy: 'user',
+        sentTo: email,
+        lastUpdatedAt: '',
+        status: ''
+      };
+
+      const updatedPOs = [...existingPOs, newPO];
+      
+      // In a real application, you would save this to a database
+      console.log('Saving PO:', newPO);
+      console.log('All POs:', updatedPOs);
+      
+      return newPO;
+    } catch (error) {
+      console.error('Error saving PO:', error);
+      throw error;
+    }
+  };
+
+  const handleSendOrder = () => {
+    setShowEmailModal(true);
+  };
+
+  const handleEmailSubmit = async (email: string) => {
     setIsSubmitting(true);
     setSubmitError(null);
     
-    // Log to console
-    console.log('Form Data:', JSON.stringify(formData, null, 2));
-    
     try {
+      const poNumber = await generatePONumber();
+      const formDataWithEmail = { ...formData, email };
+      
+      // Log to console
+      console.log('Form Data:', JSON.stringify(formDataWithEmail, null, 2));
+      
       // POST to the configured endpoint
       const response = await fetch(formConfig.endpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
-        mode: 'no-cors' // Add this to handle CORS issues
+        body: JSON.stringify(formDataWithEmail),
+        mode: 'no-cors'
       });
+      
+      // Save PO
+      await savePO(email, poNumber);
       
       console.log('Submission successful');
       setIsSubmitted(true);
-      onFormSubmitted(); // Notify parent component
+      setShowEmailModal(false);
+      onFormSubmitted();
+      
       toast({
         title: "Success!",
-        description: "Your order has been submitted successfully.",
+        description: `Your order #${poNumber} has been submitted successfully to ${email}.`,
       });
     } catch (error) {
       console.error('Error submitting form:', error);
@@ -77,6 +177,33 @@ const ConfirmationStep: React.FC<ConfirmationStepProps> = ({ formData, onFormSub
           Please review all the information below before submitting your order.
         </p>
       </div>
+
+      {/* Order Summary Card */}
+      <Card className="border-2 border-blue-200">
+        <CardHeader>
+          <CardTitle className="text-lg flex justify-between items-center">
+            <span>Order Total</span>
+            <span className="text-2xl font-bold text-green-600">
+              ${calculateTotal().toFixed(2)}
+            </span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-2">
+            {Object.entries(formData.products).map(([productId, quantity]) => {
+              const product = allProducts.find(p => p.id === productId);
+              if (!product || quantity === 0) return null;
+              
+              return (
+                <div key={productId} className="flex justify-between text-sm">
+                  <span>{product.name} (×{quantity})</span>
+                  <span>${calculateSubtotal(productId).toFixed(2)}</span>
+                </div>
+              );
+            })}
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Manufacturing Info */}
       <Card>
@@ -115,12 +242,17 @@ const ConfirmationStep: React.FC<ConfirmationStepProps> = ({ formData, onFormSub
         <CardContent>
           {Object.keys(formData.products).length > 0 ? (
             <div className="space-y-2">
-              {Object.entries(formData.products).map(([productId, quantity]) => (
-                <div key={productId} className="flex justify-between text-sm">
-                  <span>{productId}</span>
-                  <span>Quantity: {quantity}</span>
-                </div>
-              ))}
+              {Object.entries(formData.products).map(([productId, quantity]) => {
+                const product = allProducts.find(p => p.id === productId);
+                if (!product || quantity === 0) return null;
+                
+                return (
+                  <div key={productId} className="flex justify-between text-sm">
+                    <span>{product.name} ({product.sku})</span>
+                    <span>Quantity: {quantity} × ${product.price.toFixed(2)} = ${calculateSubtotal(productId).toFixed(2)}</span>
+                  </div>
+                );
+              })}
             </div>
           ) : (
             <p className="text-sm text-gray-500">No products selected</p>
@@ -189,24 +321,25 @@ const ConfirmationStep: React.FC<ConfirmationStepProps> = ({ formData, onFormSub
         </div>
       )}
 
-      {/* Submit Button */}
+      {/* Send Button */}
       <div className="text-center pt-6">
         <Button
-          onClick={handleSubmit}
-          disabled={isSubmitting}
+          onClick={handleSendOrder}
           size="lg"
           className="min-w-[200px]"
         >
-          {isSubmitting ? (
-            <>Submitting...</>
-          ) : (
-            <>
-              <Send className="h-4 w-4 mr-2" />
-              Submit Order
-            </>
-          )}
+          <Send className="h-4 w-4 mr-2" />
+          Send Order
         </Button>
       </div>
+
+      {/* Email Modal */}
+      <EmailModal
+        isOpen={showEmailModal}
+        onClose={() => setShowEmailModal(false)}
+        onSubmit={handleEmailSubmit}
+        isSubmitting={isSubmitting}
+      />
     </div>
   );
 };

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -26,6 +25,7 @@ export interface FormData {
     customFields: { label: string; value: string }[];
   };
   extraFields: { label: string; value: string }[];
+  email: string;
 }
 
 interface FormWizardProps {
@@ -50,7 +50,8 @@ const FormWizard: React.FC<FormWizardProps> = ({ onCancel }) => {
       bottleTop: '',
       customFields: []
     },
-    extraFields: []
+    extraFields: [],
+    email: ''
   });
 
   const totalSteps = 6;
