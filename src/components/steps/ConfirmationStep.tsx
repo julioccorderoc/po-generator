@@ -119,8 +119,7 @@ const ConfirmationStep: React.FC<ConfirmationStepProps> = ({ formData, onFormSub
 
 			// 1. Send to API endpoint using a CORS proxy for testing
 			const { formConfig } = await import('@/config/formConfig');
-			const proxyUrl = 'https://corsproxy.io/?';
-			await fetch(proxyUrl + encodeURIComponent(formConfig.endpoint), {
+			await fetch(formConfig.endpoint, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify(purchaseOrder)
