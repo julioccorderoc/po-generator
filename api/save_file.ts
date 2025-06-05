@@ -1,19 +1,22 @@
-
-
 export default async function handler(req: any, res: any) {
     if (req.method !== 'POST') {
         return res.status(405).json({ error: 'Method not allowed' });
     }
 
     try {
+        const endpoint = process.env.API_ENDPOINT_POST;
+        if (!endpoint) {
+            return res.status(500).json({ error: 'API endpoint not configured' });
+        }
+
         // Forward the request to the external API
-        const response = await fetch('https://juliotest.requestcatcher.com/test', {
+        const response = await fetch(endpoint, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(req.body)
         });
 
-        const data = await response.text(); // requestcatcher may not return JSON
+        const data = await response.text();
 
         return res.status(response.status).send(data);
     } catch (error) {
