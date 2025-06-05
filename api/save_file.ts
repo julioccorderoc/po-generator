@@ -1,14 +1,22 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+
+export default async function handler(req: any, res: any) {
     if (req.method !== 'POST') {
         return res.status(405).json({ error: 'Method not allowed' });
     }
 
-    // You can forward the request, save to a DB, or just echo back for now
-    // Example: Forward to external API (if needed)
-    // const response = await fetch('https://external-api.com/endpoint', { ... });
+    try {
+        // Forward the request to the external API
+        const response = await fetch('https://juliotest.requestcatcher.com/test', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(req.body)
+        });
 
-    // For now, just return the received data
-    return res.status(200).json({ received: req.body });
+        const data = await response.text(); // requestcatcher may not return JSON
+
+        return res.status(response.status).send(data);
+    } catch (error) {
+        return res.status(500).json({ error: 'Failed to forward request' });
+    }
 }
