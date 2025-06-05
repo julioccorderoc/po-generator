@@ -89,11 +89,17 @@ const ConfirmationStep: React.FC<ConfirmationStepProps> = ({ formData, onFormSub
     setShowEmailModal(false);
 
     try {
-      // Get next PO number
+      // Get next PO number - use the correct path for public folder
       const posResponse = await fetch('/data/pos.json');
+      if (!posResponse.ok) {
+        throw new Error(`Failed to fetch POs: ${posResponse.status}`);
+      }
+      
       const existingPos = await posResponse.json();
+      console.log('Existing POs:', existingPos);
+      
       const nextPoNumber = existingPos.length > 0 
-        ? Math.max(...existingPos.map((po: any) => parseInt(po.po_number))) + 1 
+        ? Math.max(...existingPos.map((po: any) => parseInt(po.po_number || po.doc_id))) + 1 
         : 1;
       const poNumberStr = nextPoNumber.toString();
       setPoNumber(poNumberStr);

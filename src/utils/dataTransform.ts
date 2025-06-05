@@ -104,16 +104,18 @@ export const transformFormDataToPurchaseOrder = async (
     });
   }
 
-  // Build annexed items from extra fields
-  const annexItems = formData.extraFields.map(field => ({
+  // Build attached fields from extra fields
+  const attachedFields = formData.extraFields.map(field => ({
     title: field.label,
     type: "custom_field",
     content: field.value
   }));
 
   const purchaseOrder: PurchaseOrder = {
-    po_number: poNumber,
-    po_date: currentDate,
+    doc_id: poNumber,
+    created_at: currentDate,
+    recipient_email: formData.email,
+    attached_fields: attachedFields.length > 0 ? attachedFields : undefined,
     company: companyInfo,
     to_manufacturer: manufacturer,
     ship_to: shipTo,
@@ -124,7 +126,7 @@ export const transformFormDataToPurchaseOrder = async (
       payment_terms: formData.terms
     },
     items,
-    remarks: formData.remarks || "",
+    remarks: formData.remarks || null,
     summary_totals: {
       total_bottles: totalBottles,
       subtotal,
@@ -133,12 +135,11 @@ export const transformFormDataToPurchaseOrder = async (
       grand_total: subtotal,
       deposit: 0
     },
-    packaging_instructions: packagingInstructions,
+    packaging_instructions: packagingInstructions.length > 0 ? packagingInstructions : null,
     auth_details: {
-      date_of_signature: currentDate,
+      signature_date: currentDate,
       authority: formData.authorizedBy
-    },
-    annex_items: annexItems
+    }
   };
 
   // Validate the data

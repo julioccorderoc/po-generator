@@ -1,6 +1,19 @@
 
 import { z } from 'zod';
 
+export const AttachedFieldSchema = z.object({
+  title: z.string(),
+  type: z.string(),
+  content: z.string(),
+});
+
+export const BaseDocGenSchema = z.object({
+  doc_id: z.string().describe("Unique identifier for the document (e.g., PO number, Invoice number)."),
+  created_at: z.string().describe("Date the document data instance refers to or was created on."), // ISO date string
+  recipient_email: z.string().email().describe("Primary recipient email for this document."),
+  attached_fields: z.array(AttachedFieldSchema).optional().default([]).describe("Optional list of annexed items to include in the document."),
+});
+
 export const CompanyInfoSchema = z.object({
   name: z.string(),
   address_line1: z.string(),
@@ -10,12 +23,12 @@ export const CompanyInfoSchema = z.object({
 
 export const ContactInfoSchema = z.object({
   name: z.string(),
-  title: z.string().optional().default(""),
+  title: z.string().optional().nullable().default(null),
   company_name: z.string(),
   address_line1: z.string(),
   address_line2: z.string(),
   tel: z.string(),
-  email: z.string().email().optional().default(""),
+  email: z.string().email().optional().nullable().default(null),
 });
 
 export const GeneralPOInfoSchema = z.object({
@@ -27,7 +40,7 @@ export const GeneralPOInfoSchema = z.object({
 
 export const ItemSchema = z.object({
   item_number: z.string(),
-  quantity: z.number(),
+  quantity: z.number().int(),
   description: z.string(),
   barcode: z.string().optional().default(""),
   unit_price: z.number(),
@@ -35,12 +48,12 @@ export const ItemSchema = z.object({
 });
 
 export const SummaryTotalsSchema = z.object({
-  total_bottles: z.number(),
+  total_bottles: z.number().int(),
   subtotal: z.number(),
-  shipping: z.number().default(0),
-  other_fees: z.number().default(0),
+  shipping: z.number(),
+  other_fees: z.number(),
   grand_total: z.number(),
-  deposit: z.number().default(0),
+  deposit: z.number(),
 });
 
 export const PackagingInstructionSchema = z.object({
@@ -48,32 +61,25 @@ export const PackagingInstructionSchema = z.object({
   instructions: z.string(),
 });
 
-export const AnnexedItemSchema = z.object({
-  title: z.string(),
-  type: z.string().default("document"), // Default type
-  content: z.string(),
-});
-
 export const AuthDetailsSchema = z.object({
-  date_of_signature: z.string(), // ISO date string
+  signature_date: z.string(), // ISO date string
   authority: z.string(),
 });
 
-export const PurchaseOrderSchema = z.object({
-  po_number: z.string(),
-  po_date: z.string(), // ISO date string
+export const PurchaseOrderSchema = BaseDocGenSchema.extend({
   company: CompanyInfoSchema,
   to_manufacturer: ContactInfoSchema,
   ship_to: ContactInfoSchema,
   general_po_info: GeneralPOInfoSchema,
   items: z.array(ItemSchema),
-  remarks: z.string().optional().default(""),
+  remarks: z.string().optional().nullable().default(null),
   summary_totals: SummaryTotalsSchema,
-  packaging_instructions: z.array(PackagingInstructionSchema),
+  packaging_instructions: z.array(PackagingInstructionSchema).optional().nullable().default(null),
   auth_details: AuthDetailsSchema,
-  annex_items: z.array(AnnexedItemSchema),
 });
 
+export type AttachedField = z.infer<typeof AttachedFieldSchema>;
+export type BaseDocGen = z.infer<typeof BaseDocGenSchema>;
 export type PurchaseOrder = z.infer<typeof PurchaseOrderSchema>;
 export type CompanyInfo = z.infer<typeof CompanyInfoSchema>;
 export type ContactInfo = z.infer<typeof ContactInfoSchema>;
