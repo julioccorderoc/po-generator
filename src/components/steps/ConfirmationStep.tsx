@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { CheckCircle, Package, Calendar, User, MapPin, FileText } from 'lucide-react';
+import { CheckCircle, Package, Calendar, User, MapPin, FileText, Settings } from 'lucide-react';
 import { FormData } from '../FormWizard';
 import { transformFormDataToPurchaseOrder } from '@/utils/dataTransform';
 import { formatMoney, formatNumber } from '@/utils/formatters';
@@ -105,6 +105,7 @@ const ConfirmationStep: React.FC<ConfirmationStepProps> = ({ formData, onFormSub
       }, poNumberStr);
 
       console.log('Generated Purchase Order:', purchaseOrder);
+      console.log('Complete purchase order JSON saved to output directory');
 
       // Save PO summary to pos.json
       const newPoSummary = {
@@ -120,11 +121,7 @@ const ConfirmationStep: React.FC<ConfirmationStepProps> = ({ formData, onFormSub
         number_of_items: orderSummary?.standardProductsCount || 0
       };
 
-      const updatedPos = [...existingPos, newPoSummary];
-      
-      // In a real app, you would save to a backend
       console.log('Saving PO summary:', newPoSummary);
-      console.log('Complete purchase order JSON saved to output directory');
 
       setIsSubmitted(true);
       onFormSubmitted();
@@ -169,6 +166,48 @@ const ConfirmationStep: React.FC<ConfirmationStepProps> = ({ formData, onFormSub
         <h3 className="text-xl font-semibold mb-2">Review Your Order</h3>
         <p className="text-gray-600">Please review all details before submitting your purchase order.</p>
       </div>
+
+      {/* Order Summary at the top */}
+      {orderSummary && (
+        <Card className="border-2 border-green-200">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-green-800">
+              <Package className="h-5 w-5" />
+              Order Summary - {formatMoney(orderSummary.totalAmount)}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {orderSummary.products.map((product: any, index: number) => (
+                <div key={index} className="flex justify-between items-center py-2 border-b last:border-b-0">
+                  <div>
+                    <div className="font-medium">{product.name}</div>
+                    <div className="text-sm text-gray-500">
+                      {formatNumber(product.quantity)} × {formatMoney(product.price)}
+                    </div>
+                  </div>
+                  <div className="font-medium">{formatMoney(product.total)}</div>
+                </div>
+              ))}
+              
+              <div className="pt-4 border-t space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span>Total Standard Products:</span>
+                  <span>{formatNumber(orderSummary.standardProductsCount)}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span>Total Items:</span>
+                  <span>{formatNumber(orderSummary.totalItems)}</span>
+                </div>
+                <div className="flex justify-between text-lg font-bold">
+                  <span>Grand Total:</span>
+                  <span className="text-green-600">{formatMoney(orderSummary.totalAmount)}</span>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Order Information */}
@@ -218,44 +257,54 @@ const ConfirmationStep: React.FC<ConfirmationStepProps> = ({ formData, onFormSub
         </Card>
       </div>
 
-      {/* Order Summary */}
-      {orderSummary && (
+      {/* Packaging Instructions */}
+      {(Object.keys(formData.packageInstructions).some(key => 
+        key !== 'customFields' && formData.packageInstructions[key as keyof typeof formData.packageInstructions]
+      ) || formData.packageInstructions.customFields.length > 0) && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Settings className="h-5 w-5" />
+              Packaging Instructions
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {Object.entries(formData.packageInstructions).map(([key, value]) => {
+              if (key === 'customFields' || !value) return null;
+              return (
+                <div key={key}>
+                  <span className="font-medium capitalize">{key.replace(/([A-Z])/g, ' $1')}:</span> {value as string}
+                </div>
+              );
+            })}
+            {formData.packageInstructions.customFields.map((field, index) => (
+              field.label && field.value && (
+                <div key={index}>
+                  <span className="font-medium">{field.label}:</span> {field.value}
+                </div>
+              )
+            ))}
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Custom Fields */}
+      {formData.extraFields.length > 0 && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <FileText className="h-5 w-5" />
-              Order Summary
+              Custom Fields
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {orderSummary.products.map((product: any, index: number) => (
-                <div key={index} className="flex justify-between items-center py-2 border-b last:border-b-0">
-                  <div>
-                    <div className="font-medium">{product.name}</div>
-                    <div className="text-sm text-gray-500">
-                      {formatNumber(product.quantity)} × {formatMoney(product.price)}
-                    </div>
-                  </div>
-                  <div className="font-medium">{formatMoney(product.total)}</div>
+          <CardContent className="space-y-3">
+            {formData.extraFields.map((field, index) => (
+              field.label && field.value && (
+                <div key={index}>
+                  <span className="font-medium">{field.label}:</span> {field.value}
                 </div>
-              ))}
-              
-              <div className="pt-4 border-t space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span>Total Standard Products:</span>
-                  <span>{formatNumber(orderSummary.standardProductsCount)}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span>Total Items:</span>
-                  <span>{formatNumber(orderSummary.totalItems)}</span>
-                </div>
-                <div className="flex justify-between text-lg font-bold">
-                  <span>Grand Total:</span>
-                  <span className="text-green-600">{formatMoney(orderSummary.totalAmount)}</span>
-                </div>
-              </div>
-            </div>
+              )
+            ))}
           </CardContent>
         </Card>
       )}

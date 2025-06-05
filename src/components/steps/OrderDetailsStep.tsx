@@ -26,6 +26,7 @@ interface OtherItem {
   name: string;
   sku: string;
   price: number;
+  barcode: string;
 }
 
 interface OrderDetailsStepProps {
@@ -104,7 +105,7 @@ const OrderDetailsStep: React.FC<OrderDetailsStepProps> = ({ formData, updateFor
     updateFormData({ products: updatedProducts });
   };
 
-  const calculateSubtotal = (product: Product & { price: number }) => {
+  const calculateSubtotal = (product: (Product & { price: number }) | OtherItem) => {
     const quantity = formData.products[product.id] || 0;
     return quantity * product.price;
   };
@@ -195,6 +196,7 @@ const OrderDetailsStep: React.FC<OrderDetailsStepProps> = ({ formData, updateFor
                 <div className="flex-1">
                   <div className="font-medium">{product.name}</div>
                   <div className="text-sm text-gray-500">SKU: {product.sku}</div>
+                  <div className="text-sm text-gray-500">Barcode: {product.barcode}</div>
                   <div className="text-sm font-medium text-green-600">{formatMoney(product.price)}</div>
                 </div>
                 
