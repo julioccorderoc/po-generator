@@ -1,0 +1,33 @@
+
+{
+  "electronics": [
+    { "id": "cpu_001", "name": "Intel Core i7 Processor", "sku": "CPU-001", "barcode": "123456789012" },
+    { "id": "gpu_001", "name": "NVIDIA GeForce RTX 4080", "sku": "GPU-001", "barcode": "123456789013" },
+    { "id": "ram_001", "name": "32GB DDR4 Memory", "sku": "RAM-001", "barcode": "123456789014" },
+    { "id": "ssd_001", "name": "1TB NVMe SSD", "sku": "SSD-001", "barcode": "123456789015" }
+  ],
+  "chemicals": [
+    { "id": "acid_001", "name": "Sulfuric Acid 98%", "sku": "ACID-001", "barcode": "123456789016" },
+    { "id": "base_001", "name": "Sodium Hydroxide", "sku": "BASE-001", "barcode": "123456789017" },
+    { "id": "solvent_001", "name": "Acetone Industrial Grade", "sku": "SOLV-001", "barcode": "123456789018" },
+    { "id": "catalyst_001", "name": "Platinum Catalyst", "sku": "CAT-001", "barcode": "123456789019" }
+  ],
+  "textiles": [
+    { "id": "cotton_001", "name": "Organic Cotton Fabric", "sku": "COT-001", "barcode": "123456789020" },
+    { "id": "silk_001", "name": "Pure Silk Material", "sku": "SILK-001", "barcode": "123456789021" },
+    { "id": "wool_001", "name": "Merino Wool Blend", "sku": "WOOL-001", "barcode": "123456789022" },
+    { "id": "nylon_001", "name": "Industrial Nylon", "sku": "NYL-001", "barcode": "123456789023" }
+  ],
+  "machinery": [
+    { "id": "motor_001", "name": "Electric Motor 5HP", "sku": "MTR-001", "barcode": "123456789024" },
+    { "id": "pump_001", "name": "Centrifugal Pump", "sku": "PUMP-001", "barcode": "123456789025" },
+    { "id": "valve_001", "name": "Ball Valve 2 inch", "sku": "VALVE-001", "barcode": "123456789026" },
+    { "id": "bearing_001", "name": "Ball Bearing Set", "sku": "BEAR-001", "barcode": "123456789027" }
+  ],
+  "automotive": [
+    { "id": "brake_001", "name": "Brake Pads Front Set", "sku": "BRAKE-001", "barcode": "123456789028" },
+    { "id": "filter_001", "name": "Air Filter Assembly", "sku": "FILT-001", "barcode": "123456789029" },
+    { "id": "oil_001", "name": "Synthetic Motor Oil", "sku": "OIL-001", "barcode": "123456789030" },
+    { "id": "tire_001", "name": "All-Season Tire", "sku": "TIRE-001", "barcode": "123456789031" }
+  ]
+}

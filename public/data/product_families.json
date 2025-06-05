@@ -1,0 +1,8 @@
+
+[
+  { "id": "electronics", "name": "Electronics & Components" },
+  { "id": "chemicals", "name": "Chemical Products" },
+  { "id": "textiles", "name": "Textiles & Materials" },
+  { "id": "machinery", "name": "Industrial Machinery" },
+  { "id": "automotive", "name": "Automotive Parts" }
+]

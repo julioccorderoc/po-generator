@@ -1,0 +1,48 @@
+
+{
+  "warehouse_a": {
+    "name": "Warehouse Manager A",
+    "title": "Warehouse Manager",
+    "company_name": "Your Company Name",
+    "address_line1": "100 Warehouse Street",
+    "address_line2": "New York, NY 10001",
+    "tel": "+1 (555) 111-2222",
+    "email": "warehouse.a@yourcompany.com"
+  },
+  "warehouse_b": {
+    "name": "Warehouse Manager B",
+    "title": "Warehouse Manager",
+    "company_name": "Your Company Name",
+    "address_line1": "200 Storage Ave",
+    "address_line2": "Los Angeles, CA 90001",
+    "tel": "+1 (555) 333-4444",
+    "email": "warehouse.b@yourcompany.com"
+  },
+  "warehouse_c": {
+    "name": "Warehouse Manager C",
+    "title": "Warehouse Manager",
+    "company_name": "Your Company Name",
+    "address_line1": "300 Distribution Blvd",
+    "address_line2": "Chicago, IL 60601",
+    "tel": "+1 (555) 555-6666",
+    "email": "warehouse.c@yourcompany.com"
+  },
+  "distribution_center": {
+    "name": "Distribution Manager",
+    "title": "Distribution Manager",
+    "company_name": "Your Company Name",
+    "address_line1": "400 Main Distribution Center",
+    "address_line2": "Dallas, TX 75201",
+    "tel": "+1 (555) 777-8888",
+    "email": "distribution@yourcompany.com"
+  },
+  "retail_store": {
+    "name": "Retail Operations Manager",
+    "title": "Retail Operations Manager",
+    "company_name": "Your Company Name",
+    "address_line1": "500 Retail Network Hub",
+    "address_line2": "Atlanta, GA 30301",
+    "tel": "+1 (555) 999-0000",
+    "email": "retail@yourcompany.com"
+  }
+}

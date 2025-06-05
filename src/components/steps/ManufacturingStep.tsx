@@ -24,9 +24,9 @@ const ManufacturingStep: React.FC<ManufacturingStepProps> = ({ formData, updateF
     const loadData = async () => {
       try {
         const [manufacturersRes, shipToRes, authorizedByRes] = await Promise.all([
-          fetch('/src/data/manufacturers.json'),
-          fetch('/src/data/ship_to.json'),
-          fetch('/src/data/authorized_by.json')
+          fetch('/data/manufacturers.json'),
+          fetch('/data/ship_to.json'),
+          fetch('/data/authorized_by.json')
         ]);
 
         const [manufacturersData, shipToData, authorizedByData] = await Promise.all([

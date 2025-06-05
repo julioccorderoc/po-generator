@@ -1,0 +1,9 @@
+
+[
+  { "id": "net_30", "name": "Net 30 Days" },
+  { "id": "net_60", "name": "Net 60 Days" },
+  { "id": "net_90", "name": "Net 90 Days" },
+  { "id": "cod", "name": "Cash on Delivery" },
+  { "id": "prepaid", "name": "Prepaid" },
+  { "id": "2_10_net_30", "name": "2/10 Net 30" }
+]

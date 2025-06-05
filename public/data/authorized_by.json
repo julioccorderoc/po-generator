@@ -1,0 +1,8 @@
+
+[
+  { "id": "john_doe", "name": "John Doe - Operations Manager" },
+  { "id": "jane_smith", "name": "Jane Smith - Procurement Director" },
+  { "id": "mike_johnson", "name": "Mike Johnson - Regional Manager" },
+  { "id": "sarah_wilson", "name": "Sarah Wilson - Supply Chain Lead" },
+  { "id": "david_brown", "name": "David Brown - VP Operations" }
+]

@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -11,6 +12,7 @@ interface Product {
   id: string;
   name: string;
   sku: string;
+  barcode: string;
 }
 
 interface ManufacturerProduct {
@@ -37,13 +39,13 @@ const OrderDetailsStep: React.FC<OrderDetailsStepProps> = ({ formData, updateFor
 
   useEffect(() => {
     const loadProducts = async () => {
-      if (!formData.manufacturer || !formData.productFamily) return;
+      if (!formData.manufacturer || formData.productFamilies.length === 0) return;
 
       try {
         const [productsRes, manufacturerProductsRes, otherItemsRes] = await Promise.all([
-          fetch('/src/data/products.json'),
-          fetch('/src/data/manufacturer_products.json'),
-          fetch('/src/data/other_items.json')
+          fetch('/data/products.json'),
+          fetch('/data/manufacturer_products.json'),
+          fetch('/data/other_items.json')
         ]);
         
         const [productsData, manufacturerProductsData, otherItemsData] = await Promise.all([
@@ -52,15 +54,21 @@ const OrderDetailsStep: React.FC<OrderDetailsStepProps> = ({ formData, updateFor
           otherItemsRes.json()
         ]);
 
-        // Get base products for the family
-        const familyProducts: Product[] = productsData[formData.productFamily] || [];
-        
-        // Get manufacturer pricing for these products
-        const manufacturerProducts: ManufacturerProduct[] = manufacturerProductsData[formData.manufacturer]?.[formData.productFamily] || [];
-        
+        // Get products from all selected families
+        let allFamilyProducts: Product[] = [];
+        let allManufacturerProducts: ManufacturerProduct[] = [];
+
+        formData.productFamilies.forEach(familyId => {
+          const familyProducts: Product[] = productsData[familyId] || [];
+          const manufacturerProducts: ManufacturerProduct[] = manufacturerProductsData[formData.manufacturer]?.[familyId] || [];
+          
+          allFamilyProducts = [...allFamilyProducts, ...familyProducts];
+          allManufacturerProducts = [...allManufacturerProducts, ...manufacturerProducts];
+        });
+
         // Combine product info with pricing
-        const combinedProducts = familyProducts.map(product => {
-          const manufacturerProduct = manufacturerProducts.find(mp => mp.id === product.id);
+        const combinedProducts = allFamilyProducts.map(product => {
+          const manufacturerProduct = allManufacturerProducts.find(mp => mp.id === product.id);
           return {
             ...product,
             price: manufacturerProduct?.price || 0
@@ -78,7 +86,7 @@ const OrderDetailsStep: React.FC<OrderDetailsStepProps> = ({ formData, updateFor
     };
 
     loadProducts();
-  }, [formData.manufacturer, formData.productFamily]);
+  }, [formData.manufacturer, formData.productFamilies]);
 
   const updateQuantity = (productId: string, quantity: number) => {
     const updatedProducts = { ...formData.products };
@@ -107,6 +115,12 @@ const OrderDetailsStep: React.FC<OrderDetailsStepProps> = ({ formData, updateFor
     }, 0);
   };
 
+  const getSelectedProductsCount = () => {
+    return allProducts.reduce((total, product) => {
+      return total + (formData.products[product.id] || 0);
+    }, 0);
+  };
+
   if (!formData.manufacturer) {
     return (
       <div className="text-center py-8 text-gray-500">
@@ -115,10 +129,10 @@ const OrderDetailsStep: React.FC<OrderDetailsStepProps> = ({ formData, updateFor
     );
   }
 
-  if (!formData.productFamily) {
+  if (formData.productFamilies.length === 0) {
     return (
       <div className="text-center py-8 text-gray-500">
-        Please select a product family in the previous step to view available products.
+        Please select at least one product family in the previous step to view available products.
       </div>
     );
   }
@@ -130,7 +144,7 @@ const OrderDetailsStep: React.FC<OrderDetailsStepProps> = ({ formData, updateFor
         <div className="mb-4">
           <h4 className="text-lg font-medium mb-2">Available Products</h4>
           <p className="text-sm text-gray-600">
-            Manufacturer: {formData.manufacturer} | Product Family: {formData.productFamily}
+            Manufacturer: {formData.manufacturer} | Product Families: {formData.productFamilies.join(', ')}
           </p>
         </div>
 
@@ -142,6 +156,7 @@ const OrderDetailsStep: React.FC<OrderDetailsStepProps> = ({ formData, updateFor
               <div className="flex-1">
                 <div className="font-medium">{product.name}</div>
                 <div className="text-sm text-gray-500">SKU: {product.sku}</div>
+                <div className="text-sm text-gray-500">Barcode: {product.barcode}</div>
                 <div className="text-sm font-medium text-green-600">{formatMoney(product.price)}</div>
               </div>
               
@@ -212,7 +227,7 @@ const OrderDetailsStep: React.FC<OrderDetailsStepProps> = ({ formData, updateFor
 
         {allProducts.length === 0 && otherItems.length === 0 && (
           <div className="text-center py-8 text-gray-500">
-            No products available for the selected manufacturer and product family.
+            No products available for the selected manufacturer and product families.
           </div>
         )}
       </div>
@@ -246,9 +261,15 @@ const OrderDetailsStep: React.FC<OrderDetailsStepProps> = ({ formData, updateFor
                     ))}
                 </div>
                 <hr />
-                <div className="flex justify-between font-bold text-lg">
-                  <span>Total:</span>
-                  <span className="text-green-600">{formatMoney(calculateTotal())}</span>
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span>Total Products:</span>
+                    <span>{formatNumber(getSelectedProductsCount())}</span>
+                  </div>
+                  <div className="flex justify-between font-bold text-lg">
+                    <span>Total:</span>
+                    <span className="text-green-600">{formatMoney(calculateTotal())}</span>
+                  </div>
                 </div>
               </>
             )}

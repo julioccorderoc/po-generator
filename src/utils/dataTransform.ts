@@ -1,3 +1,4 @@
+
 import { FormData } from '../components/FormWizard';
 import { PurchaseOrder, PurchaseOrderSchema } from '../schemas/purchaseOrderSchema';
 
@@ -7,12 +8,12 @@ export const transformFormDataToPurchaseOrder = async (
 ): Promise<PurchaseOrder> => {
   // Load lookup data
   const [companyInfoRes, manufacturerContactsRes, shipToContactsRes, productsRes, manufacturerProductsRes, otherItemsRes] = await Promise.all([
-    fetch('/src/data/company_info.json'),
-    fetch('/src/data/manufacturer_contacts.json'),
-    fetch('/src/data/ship_to_contacts.json'),
-    fetch('/src/data/products.json'),
-    fetch('/src/data/manufacturer_products.json'),
-    fetch('/src/data/other_items.json')
+    fetch('/data/company_info.json'),
+    fetch('/data/manufacturer_contacts.json'),
+    fetch('/data/ship_to_contacts.json'),
+    fetch('/data/products.json'),
+    fetch('/data/manufacturer_products.json'),
+    fetch('/data/other_items.json')
   ]);
 
   const [companyInfo, manufacturerContacts, shipToContacts, productsData, manufacturerProductsData, otherItemsData] = await Promise.all([
@@ -28,25 +29,34 @@ export const transformFormDataToPurchaseOrder = async (
   const manufacturer = manufacturerContacts[formData.manufacturer];
   const shipTo = shipToContacts[formData.shipTo];
   
-  // Get all products to build items array
-  const familyProducts = productsData[formData.productFamily] || [];
-  const manufacturerProducts = manufacturerProductsData[formData.manufacturer]?.[formData.productFamily] || [];
+  // Get all products from selected families to build items array
+  let allFamilyProducts: any[] = [];
+  let allManufacturerProducts: any[] = [];
+
+  formData.productFamilies.forEach(familyId => {
+    const familyProducts = productsData[familyId] || [];
+    const manufacturerProducts = manufacturerProductsData[formData.manufacturer]?.[familyId] || [];
+    
+    allFamilyProducts = [...allFamilyProducts, ...familyProducts];
+    allManufacturerProducts = [...allManufacturerProducts, ...manufacturerProducts];
+  });
+
   const manufacturerOtherItems = otherItemsData[formData.manufacturer] || [];
 
   const items = Object.entries(formData.products)
     .filter(([_, quantity]) => quantity > 0)
     .map(([productId, quantity]) => {
       // Check if it's a standard product
-      const baseProduct = familyProducts.find(p => p.id === productId);
+      const baseProduct = allFamilyProducts.find(p => p.id === productId);
       if (baseProduct) {
-        const manufacturerProduct = manufacturerProducts.find(mp => mp.id === productId);
+        const manufacturerProduct = allManufacturerProducts.find(mp => mp.id === productId);
         if (!manufacturerProduct) throw new Error(`Manufacturer product ${productId} not found`);
         
         return {
           item_number: manufacturerProduct.manufacturer_id,
           quantity,
           description: baseProduct.name,
-          barcode: "", // Default empty, will be added when needed
+          barcode: baseProduct.barcode || "",
           unit_price: manufacturerProduct.price,
           total: quantity * manufacturerProduct.price
         };
@@ -60,7 +70,7 @@ export const transformFormDataToPurchaseOrder = async (
         item_number: otherItem.sku,
         quantity,
         description: otherItem.name,
-        barcode: "", // Default empty
+        barcode: "",
         unit_price: otherItem.price,
         total: quantity * otherItem.price
       };
@@ -97,7 +107,7 @@ export const transformFormDataToPurchaseOrder = async (
   // Build annexed items from extra fields
   const annexItems = formData.extraFields.map(field => ({
     title: field.label,
-    type: "custom_field", // Default type
+    type: "custom_field",
     content: field.value
   }));
 
@@ -108,7 +118,7 @@ export const transformFormDataToPurchaseOrder = async (
     to_manufacturer: manufacturer,
     ship_to: shipTo,
     general_po_info: {
-      product_name: formData.productFamily,
+      product_name: formData.productFamilies.join(', '),
       shipped_via: formData.shippedVia,
       est_delivery_date: formData.estimatedDelivery ? formData.estimatedDelivery.toISOString().split('T')[0] : currentDate,
       payment_terms: formData.terms
@@ -118,10 +128,10 @@ export const transformFormDataToPurchaseOrder = async (
     summary_totals: {
       total_bottles: totalBottles,
       subtotal,
-      shipping: 0, // Default 0
-      other_fees: 0, // Default 0  
+      shipping: 0,
+      other_fees: 0,  
       grand_total: subtotal,
-      deposit: 0 // Default 0
+      deposit: 0
     },
     packaging_instructions: packagingInstructions,
     auth_details: {

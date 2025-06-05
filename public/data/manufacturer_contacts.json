@@ -1,0 +1,48 @@
+
+{
+  "acme": {
+    "name": "John Smith",
+    "title": "Sales Manager",
+    "company_name": "ACME Manufacturing Co.",
+    "address_line1": "456 Industrial Ave",
+    "address_line2": "Manufacturing District, MD 67890",
+    "tel": "+1 (555) 234-5678",
+    "email": "john.smith@acme.com"
+  },
+  "globodyne": {
+    "name": "Sarah Johnson",
+    "title": "Account Representative",
+    "company_name": "Globodyne Corporation",
+    "address_line1": "789 Corporate Blvd",
+    "address_line2": "Corporate Center, CC 11111",
+    "tel": "+1 (555) 345-6789",
+    "email": "sarah.johnson@globodyne.com"
+  },
+  "initech": {
+    "name": "Mike Davis",
+    "title": "Sales Director",
+    "company_name": "Initech Solutions",
+    "address_line1": "321 Tech Park Way",
+    "address_line2": "Innovation Valley, IV 22222",
+    "tel": "+1 (555) 456-7890",
+    "email": "mike.davis@initech.com"
+  },
+  "umbrella": {
+    "name": "Lisa Wilson",
+    "title": "Business Development",
+    "company_name": "Umbrella Corporation",
+    "address_line1": "654 Science Drive",
+    "address_line2": "Research Campus, RC 33333",
+    "tel": "+1 (555) 567-8901",
+    "email": "lisa.wilson@umbrella.com"
+  },
+  "wayne": {
+    "name": "Bruce Wayne",
+    "title": "CEO",
+    "company_name": "Wayne Enterprises",
+    "address_line1": "1007 Mountain Drive",
+    "address_line2": "Gotham City, GC 44444",
+    "tel": "+1 (555) 678-9012",
+    "email": "bruce.wayne@wayneenterprises.com"
+  }
+}

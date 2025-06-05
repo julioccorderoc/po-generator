@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -13,7 +14,7 @@ export interface FormData {
   manufacturer: string;
   shipTo: string;
   authorizedBy: string;
-  productFamily: string;
+  productFamilies: string[];
   shippedVia: string;
   estimatedDelivery: Date | null;
   terms: string;
@@ -39,7 +40,7 @@ const FormWizard: React.FC<FormWizardProps> = ({ onCancel }) => {
     manufacturer: '',
     shipTo: '',
     authorizedBy: '',
-    productFamily: '',
+    productFamilies: [],
     shippedVia: '',
     estimatedDelivery: null,
     terms: '',

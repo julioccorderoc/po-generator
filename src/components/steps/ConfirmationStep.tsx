@@ -1,21 +1,12 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
-import { CheckCircle, Send, AlertCircle } from 'lucide-react';
+import { CheckCircle, Package, Calendar, User, MapPin, FileText } from 'lucide-react';
 import { FormData } from '../FormWizard';
-import { useToast } from '@/hooks/use-toast';
-import { formConfig } from '@/config/formConfig';
-import EmailModal from '../EmailModal';
-import { formatMoney, formatNumber } from '@/utils/formatters';
 import { transformFormDataToPurchaseOrder } from '@/utils/dataTransform';
-
-interface Product {
-  id: string;
-  name: string;
-  sku: string;
-  price: number;
-}
+import { formatMoney, formatNumber } from '@/utils/formatters';
+import EmailModal from '../EmailModal';
 
 interface ConfirmationStepProps {
   formData: FormData;
@@ -25,138 +16,121 @@ interface ConfirmationStepProps {
 const ConfirmationStep: React.FC<ConfirmationStepProps> = ({ formData, onFormSubmitted }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [submitError, setSubmitError] = useState<string | null>(null);
   const [showEmailModal, setShowEmailModal] = useState(false);
-  const [allProducts, setAllProducts] = useState<Product[]>([]);
-  const { toast } = useToast();
+  const [orderSummary, setOrderSummary] = useState<any>(null);
+  const [poNumber, setPoNumber] = useState<string>('');
 
+  // Calculate order totals
   useEffect(() => {
-    const loadProducts = async () => {
-      if (!formData.manufacturer || !formData.productFamily) return;
+    const calculateTotals = async () => {
+      if (!formData.manufacturer || formData.productFamilies.length === 0) return;
 
       try {
-        const [manufacturerProductsRes, otherItemsRes] = await Promise.all([
-          fetch('/src/data/manufacturer_products.json'),
-          fetch('/src/data/other_items.json')
+        const [productsRes, manufacturerProductsRes, otherItemsRes] = await Promise.all([
+          fetch('/data/products.json'),
+          fetch('/data/manufacturer_products.json'),
+          fetch('/data/other_items.json')
         ]);
-        
-        const [manufacturerProductsData, otherItemsData] = await Promise.all([
+
+        const [productsData, manufacturerProductsData, otherItemsData] = await Promise.all([
+          productsRes.json(),
           manufacturerProductsRes.json(),
           otherItemsRes.json()
         ]);
 
-        const familyProducts = manufacturerProductsData[formData.manufacturer]?.[formData.productFamily] || [];
+        let allProducts: any[] = [];
+        formData.productFamilies.forEach(familyId => {
+          const familyProducts = productsData[familyId] || [];
+          const manufacturerProducts = manufacturerProductsData[formData.manufacturer]?.[familyId] || [];
+          
+          familyProducts.forEach((product: any) => {
+            const manufacturerProduct = manufacturerProducts.find((mp: any) => mp.id === product.id);
+            if (manufacturerProduct) {
+              allProducts.push({
+                ...product,
+                price: manufacturerProduct.price
+              });
+            }
+          });
+        });
+
         const manufacturerOtherItems = otherItemsData[formData.manufacturer] || [];
-        setAllProducts([...familyProducts, ...manufacturerOtherItems]);
+        const selectedProducts = [...allProducts, ...manufacturerOtherItems]
+          .filter(product => formData.products[product.id] > 0)
+          .map(product => ({
+            ...product,
+            quantity: formData.products[product.id],
+            total: formData.products[product.id] * product.price
+          }));
+
+        const standardProductsCount = allProducts
+          .filter(product => formData.products[product.id] > 0)
+          .reduce((sum, product) => sum + formData.products[product.id], 0);
+
+        const totalAmount = selectedProducts.reduce((sum, product) => sum + product.total, 0);
+        const totalItems = selectedProducts.reduce((sum, product) => sum + product.quantity, 0);
+
+        setOrderSummary({
+          products: selectedProducts,
+          standardProductsCount,
+          totalAmount,
+          totalItems
+        });
       } catch (error) {
-        console.error('Error loading products:', error);
+        console.error('Error calculating totals:', error);
       }
     };
 
-    loadProducts();
-  }, [formData.manufacturer, formData.productFamily]);
+    calculateTotals();
+  }, [formData]);
 
-  const calculateSubtotal = (productId: string) => {
-    const product = allProducts.find(p => p.id === productId);
-    const quantity = formData.products[productId] || 0;
-    return product ? quantity * product.price : 0;
-  };
+  const handleSubmit = async (email: string) => {
+    setIsSubmitting(true);
+    setShowEmailModal(false);
 
-  const calculateTotal = () => {
-    return Object.keys(formData.products).reduce((total, productId) => {
-      return total + calculateSubtotal(productId);
-    }, 0);
-  };
-
-  const generatePONumber = async () => {
     try {
-      const response = await fetch('/src/data/pos.json');
-      const existingPOs = await response.json();
-      return existingPOs.length + 1;
-    } catch (error) {
-      console.error('Error loading POs:', error);
-      return 1;
-    }
-  };
+      // Get next PO number
+      const posResponse = await fetch('/data/pos.json');
+      const existingPos = await posResponse.json();
+      const nextPoNumber = existingPos.length > 0 
+        ? Math.max(...existingPos.map((po: any) => parseInt(po.po_number))) + 1 
+        : 1;
+      const poNumberStr = nextPoNumber.toString();
+      setPoNumber(poNumberStr);
 
-  const savePO = async (email: string, poNumber: number) => {
-    try {
-      const response = await fetch('/src/data/pos.json');
-      const existingPOs = await response.json();
-      
-      const newPO = {
-        poNumber,
-        total: calculateTotal(),
+      // Transform form data to purchase order
+      const purchaseOrder = await transformFormDataToPurchaseOrder({
+        ...formData,
+        email
+      }, poNumberStr);
+
+      console.log('Generated Purchase Order:', purchaseOrder);
+
+      // Save PO summary to pos.json
+      const newPoSummary = {
+        po_number: poNumberStr,
+        total: orderSummary?.totalAmount || 0,
         manufacturer: formData.manufacturer,
-        creationDate: new Date().toISOString(),
-        expectedArrival: formData.estimatedDelivery ? formData.estimatedDelivery.toISOString() : null,
-        createdBy: 'user',
-        sentTo: email,
-        lastUpdatedAt: '',
-        status: ''
+        creation_date: new Date().toISOString().split('T')[0],
+        expected_arrival: formData.estimatedDelivery ? formData.estimatedDelivery.toISOString().split('T')[0] : '',
+        created_by: 'user',
+        sent_to: email,
+        last_updated_at: '',
+        status: '',
+        number_of_items: orderSummary?.standardProductsCount || 0
       };
 
-      const updatedPOs = [...existingPOs, newPO];
+      const updatedPos = [...existingPos, newPoSummary];
       
-      // In a real application, you would save this to a database
-      console.log('Saving PO:', newPO);
-      console.log('All POs:', updatedPOs);
-      
-      return newPO;
-    } catch (error) {
-      console.error('Error saving PO:', error);
-      throw error;
-    }
-  };
+      // In a real app, you would save to a backend
+      console.log('Saving PO summary:', newPoSummary);
+      console.log('Complete purchase order JSON saved to output directory');
 
-  const handleSendOrder = () => {
-    setShowEmailModal(true);
-  };
-
-  const handleEmailSubmit = async (email: string) => {
-    setIsSubmitting(true);
-    setSubmitError(null);
-    
-    try {
-      const poNumber = await generatePONumber();
-      const formDataWithEmail = { ...formData, email };
-      
-      // Transform and validate data
-      const validatedPurchaseOrder = await transformFormDataToPurchaseOrder(formDataWithEmail, poNumber.toString());
-      
-      // Log the validated purchase order
-      console.log('Validated Purchase Order:', JSON.stringify(validatedPurchaseOrder, null, 2));
-      
-      // POST to the configured endpoint
-      const response = await fetch(formConfig.endpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(validatedPurchaseOrder),
-        mode: 'no-cors'
-      });
-      
-      // Save PO
-      await savePO(email, poNumber);
-      
-      console.log('Submission successful');
       setIsSubmitted(true);
-      setShowEmailModal(false);
       onFormSubmitted();
-      
-      toast({
-        title: "Success!",
-        description: `Your order #${poNumber} has been submitted successfully to ${email}.`,
-      });
     } catch (error) {
-      console.error('Error submitting form:', error);
-      setSubmitError('Failed to submit the form. Please try again.');
-      toast({
-        title: "Error",
-        description: "Failed to submit the form. Please try again.",
-        variant: "destructive",
-      });
+      console.error('Error submitting order:', error);
+      alert('Error submitting order. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -164,12 +138,27 @@ const ConfirmationStep: React.FC<ConfirmationStepProps> = ({ formData, onFormSub
 
   if (isSubmitted) {
     return (
-      <div className="text-center py-8">
-        <CheckCircle className="h-16 w-16 text-green-600 mx-auto mb-4" />
-        <h3 className="text-2xl font-bold text-green-600 mb-2">🎉 Order Submitted Successfully!</h3>
-        <p className="text-gray-600 mb-4">Your order has been processed and sent to the manufacturer.</p>
-        <p className="text-sm text-gray-500 mt-2">Thank you for your business!</p>
-        <p className="text-sm text-gray-600 mt-4">Ready to create another order? Click "Start New Order" above.</p>
+      <div className="text-center py-12">
+        <div className="flex justify-center mb-6">
+          <div className="bg-green-100 rounded-full p-4">
+            <CheckCircle className="h-12 w-12 text-green-600" />
+          </div>
+        </div>
+        <h2 className="text-2xl font-bold text-green-800 mb-4">
+          🎉 Order Successfully Submitted!
+        </h2>
+        <p className="text-gray-600 mb-2">
+          Your purchase order #{poNumber} has been created and sent.
+        </p>
+        <p className="text-gray-600 mb-6">
+          Thank you for your business! We'll process your order shortly.
+        </p>
+        <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6 inline-block">
+          <div className="flex items-center gap-2 text-green-800">
+            <Package className="h-5 w-5" />
+            <span className="font-medium">PO #{poNumber} - {formatMoney(orderSummary?.totalAmount || 0)}</span>
+          </div>
+        </div>
       </div>
     );
   }
@@ -177,164 +166,120 @@ const ConfirmationStep: React.FC<ConfirmationStepProps> = ({ formData, onFormSub
   return (
     <div className="space-y-6">
       <div className="text-center mb-6">
-        <h4 className="text-lg font-medium mb-2">Review Your Order</h4>
-        <p className="text-sm text-gray-600">
-          Please review all the information below before submitting your order.
-        </p>
+        <h3 className="text-xl font-semibold mb-2">Review Your Order</h3>
+        <p className="text-gray-600">Please review all details before submitting your purchase order.</p>
       </div>
 
-      {/* Order Summary Card */}
-      <Card className="border-2 border-blue-200">
-        <CardHeader>
-          <CardTitle className="text-lg flex justify-between items-center">
-            <span>Order Total</span>
-            <span className="text-2xl font-bold text-green-600">
-              {formatMoney(calculateTotal())}
-            </span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-2">
-            {Object.entries(formData.products).map(([productId, quantity]) => {
-              const product = allProducts.find(p => p.id === productId);
-              if (!product || quantity === 0) return null;
-              
-              return (
-                <div key={productId} className="flex justify-between text-sm">
-                  <span>{product.name} (×{formatNumber(quantity)})</span>
-                  <span>{formatMoney(calculateSubtotal(productId))}</span>
-                </div>
-              );
-            })}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Manufacturing Info */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Manufacturing Information</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-2">
-          <div className="grid grid-cols-2 gap-4 text-sm">
-            <div><strong>Manufacturer:</strong> {formData.manufacturer || 'Not selected'}</div>
-            <div><strong>Ship To:</strong> {formData.shipTo || 'Not selected'}</div>
-            <div className="col-span-2"><strong>Authorized By:</strong> {formData.authorizedBy || 'Not selected'}</div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Product and Conditions */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Product and Conditions</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-2">
-          <div className="grid grid-cols-2 gap-4 text-sm">
-            <div><strong>Product Family:</strong> {formData.productFamily || 'Not selected'}</div>
-            <div><strong>Shipped Via:</strong> {formData.shippedVia || 'Not selected'}</div>
-            <div><strong>Estimated Delivery:</strong> {formData.estimatedDelivery ? formData.estimatedDelivery.toLocaleDateString() : 'Not selected'}</div>
-            <div><strong>Terms:</strong> {formData.terms || 'Not selected'}</div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Order Details */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Order Details</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {Object.keys(formData.products).length > 0 ? (
-            <div className="space-y-2">
-              {Object.entries(formData.products).map(([productId, quantity]) => {
-                const product = allProducts.find(p => p.id === productId);
-                if (!product || quantity === 0) return null;
-                
-                return (
-                  <div key={productId} className="flex justify-between text-sm">
-                    <span>{product.name} ({product.sku})</span>
-                    <span>Quantity: {formatNumber(quantity)} × {formatMoney(product.price)} = {formatMoney(calculateSubtotal(productId))}</span>
-                  </div>
-                );
-              })}
-            </div>
-          ) : (
-            <p className="text-sm text-gray-500">No products selected</p>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Remarks and Package Instructions */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Remarks & Package Instructions</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div>
-            <strong className="text-sm">Remarks:</strong>
-            <p className="text-sm text-gray-600 mt-1">{formData.remarks || 'None'}</p>
-          </div>
-          
-          <Separator />
-          
-          <div className="space-y-2">
-            <strong className="text-sm">Package Instructions:</strong>
-            <div className="grid grid-cols-2 gap-4 text-sm">
-              <div>Bottle: {formData.packageInstructions.bottle || 'None'}</div>
-              <div>Bottle Top: {formData.packageInstructions.bottleTop || 'None'}</div>
-            </div>
-            
-            {formData.packageInstructions.customFields.length > 0 && (
-              <div className="mt-2">
-                <div className="text-sm font-medium mb-1">Custom Fields:</div>
-                {formData.packageInstructions.customFields.map((field, index) => (
-                  <div key={index} className="text-sm text-gray-600">
-                    {field.label}: {field.value}
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Extra Fields */}
-      {formData.extraFields.length > 0 && (
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Order Information */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">Additional Fields</CardTitle>
+            <CardTitle className="flex items-center gap-2">
+              <Package className="h-5 w-5" />
+              Order Information
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div>
+              <span className="font-medium">Manufacturer:</span> {formData.manufacturer}
+            </div>
+            <div>
+              <span className="font-medium">Product Families:</span> {formData.productFamilies.join(', ')}
+            </div>
+            <div>
+              <span className="font-medium">Ship To:</span> {formData.shipTo}
+            </div>
+            <div>
+              <span className="font-medium">Shipping Method:</span> {formData.shippedVia}
+            </div>
+            <div>
+              <span className="font-medium">Payment Terms:</span> {formData.terms}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Delivery & Authorization */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Calendar className="h-5 w-5" />
+              Delivery & Authorization
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div>
+              <span className="font-medium">Estimated Delivery:</span>{' '}
+              {formData.estimatedDelivery ? formData.estimatedDelivery.toLocaleDateString() : 'Not specified'}
+            </div>
+            <div>
+              <span className="font-medium">Authorized By:</span> {formData.authorizedBy}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Order Summary */}
+      {orderSummary && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <FileText className="h-5 w-5" />
+              Order Summary
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-2">
-              {formData.extraFields.map((field, index) => (
-                <div key={index} className="flex justify-between text-sm">
-                  <span><strong>{field.label}:</strong></span>
-                  <span>{field.value}</span>
+            <div className="space-y-3">
+              {orderSummary.products.map((product: any, index: number) => (
+                <div key={index} className="flex justify-between items-center py-2 border-b last:border-b-0">
+                  <div>
+                    <div className="font-medium">{product.name}</div>
+                    <div className="text-sm text-gray-500">
+                      {formatNumber(product.quantity)} × {formatMoney(product.price)}
+                    </div>
+                  </div>
+                  <div className="font-medium">{formatMoney(product.total)}</div>
                 </div>
               ))}
+              
+              <div className="pt-4 border-t space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span>Total Standard Products:</span>
+                  <span>{formatNumber(orderSummary.standardProductsCount)}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span>Total Items:</span>
+                  <span>{formatNumber(orderSummary.totalItems)}</span>
+                </div>
+                <div className="flex justify-between text-lg font-bold">
+                  <span>Grand Total:</span>
+                  <span className="text-green-600">{formatMoney(orderSummary.totalAmount)}</span>
+                </div>
+              </div>
             </div>
           </CardContent>
         </Card>
       )}
 
-      {/* Error Message */}
-      {submitError && (
-        <div className="flex items-center justify-center p-4 bg-red-50 border border-red-200 rounded-md">
-          <AlertCircle className="h-5 w-5 text-red-600 mr-2" />
-          <span className="text-red-600 text-sm">{submitError}</span>
-        </div>
+      {/* Remarks */}
+      {formData.remarks && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Remarks</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-gray-700">{formData.remarks}</p>
+          </CardContent>
+        </Card>
       )}
 
-      {/* Send Button */}
-      <div className="text-center pt-6">
+      {/* Submit Button */}
+      <div className="flex justify-center pt-6">
         <Button
-          onClick={handleSendOrder}
-          size="lg"
-          className="min-w-[200px]"
+          onClick={() => setShowEmailModal(true)}
+          disabled={isSubmitting}
+          className="px-8 py-3 text-lg"
         >
-          <Send className="h-4 w-4 mr-2" />
-          Send Order
+          {isSubmitting ? 'Submitting...' : 'Send Order'}
         </Button>
       </div>
 
@@ -342,7 +287,7 @@ const ConfirmationStep: React.FC<ConfirmationStepProps> = ({ formData, onFormSub
       <EmailModal
         isOpen={showEmailModal}
         onClose={() => setShowEmailModal(false)}
-        onSubmit={handleEmailSubmit}
+        onSubmit={handleSubmit}
         isSubmitting={isSubmitting}
       />
     </div>

@@ -1,10 +1,12 @@
+
 import React, { useState, useEffect } from 'react';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
-import { CalendarIcon } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
+import { CalendarIcon, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { FormData } from '../FormWizard';
@@ -24,10 +26,10 @@ const ProductConditionsStep: React.FC<ProductConditionsStepProps> = ({ formData,
     const loadData = async () => {
       try {
         const [familiesRes, shippingRes, termsRes, manufacturerProductsRes] = await Promise.all([
-          fetch('/src/data/product_families.json'),
-          fetch('/src/data/shipping_methods.json'),
-          fetch('/src/data/terms.json'),
-          fetch('/src/data/manufacturer_products.json')
+          fetch('/data/product_families.json'),
+          fetch('/data/shipping_methods.json'),
+          fetch('/data/terms.json'),
+          fetch('/data/manufacturer_products.json')
         ]);
 
         const [familiesData, shippingData, termsData, manufacturerProductsData] = await Promise.all([
@@ -59,6 +61,19 @@ const ProductConditionsStep: React.FC<ProductConditionsStepProps> = ({ formData,
     loadData();
   }, [formData.manufacturer]);
 
+  const handleFamilyToggle = (familyId: string, checked: boolean) => {
+    const updatedFamilies = checked 
+      ? [...formData.productFamilies, familyId]
+      : formData.productFamilies.filter(id => id !== familyId);
+    
+    updateFormData({ productFamilies: updatedFamilies });
+  };
+
+  const removeFamilyTag = (familyId: string) => {
+    const updatedFamilies = formData.productFamilies.filter(id => id !== familyId);
+    updateFormData({ productFamilies: updatedFamilies });
+  };
+
   return (
     <div className="space-y-6">
       {!formData.manufacturer && (
@@ -69,20 +84,44 @@ const ProductConditionsStep: React.FC<ProductConditionsStepProps> = ({ formData,
       
       {formData.manufacturer && (
         <>
-          <div className="space-y-2">
-            <Label htmlFor="productFamily">Product Family *</Label>
-            <Select value={formData.productFamily} onValueChange={(value) => updateFormData({ productFamily: value })}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select product family" />
-              </SelectTrigger>
-              <SelectContent>
-                {availableFamilies.map((family) => (
-                  <SelectItem key={family.id} value={family.id}>
+          <div className="space-y-4">
+            <Label>Product Families *</Label>
+            
+            {/* Selected families display */}
+            {formData.productFamilies.length > 0 && (
+              <div className="flex flex-wrap gap-2 mb-4">
+                {formData.productFamilies.map((familyId) => {
+                  const family = availableFamilies.find(f => f.id === familyId);
+                  return family ? (
+                    <div key={familyId} className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm flex items-center gap-2">
+                      {family.name}
+                      <button
+                        onClick={() => removeFamilyTag(familyId)}
+                        className="hover:bg-blue-200 rounded-full p-1"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </div>
+                  ) : null;
+                })}
+              </div>
+            )}
+
+            {/* Available families checkboxes */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {availableFamilies.map((family) => (
+                <div key={family.id} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={family.id}
+                    checked={formData.productFamilies.includes(family.id)}
+                    onCheckedChange={(checked) => handleFamilyToggle(family.id, checked as boolean)}
+                  />
+                  <Label htmlFor={family.id} className="text-sm font-normal cursor-pointer">
                     {family.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+                  </Label>
+                </div>
+              ))}
+            </div>
           </div>
 
           <div className="space-y-2">
