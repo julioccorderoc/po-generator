@@ -1,4 +1,4 @@
-export default async function handler(req: any, res: any) {
+const handler = async (req: any, res: any) => {
     if (req.method !== 'POST') {
         return res.status(405).json({ error: 'Method not allowed' });
     }
@@ -9,7 +9,6 @@ export default async function handler(req: any, res: any) {
             return res.status(500).json({ error: 'API endpoint not configured' });
         }
 
-        // Forward the request to the external API
         const response = await fetch(endpoint, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -22,4 +21,6 @@ export default async function handler(req: any, res: any) {
     } catch (error) {
         return res.status(500).json({ error: 'Failed to forward request' });
     }
-}
+};
+
+export default handler;
