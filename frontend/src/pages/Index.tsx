@@ -54,7 +54,7 @@ const Index = () => {
             variant="outline"
             onClick={async () => {
               try {
-                const response = await fetch("/api/test_post", {
+                const response = await fetch("/api/test_api", {
                   method: "POST",
                   headers: { "Content-Type": "application/json" },
                   body: JSON.stringify({ test: true })
