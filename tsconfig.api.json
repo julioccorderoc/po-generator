@@ -1,0 +1,23 @@
+{
+    "extends": "@tsconfig/node-lts/tsconfig.json",
+    "compilerOptions": {
+        "module": "NodeNext",
+        "moduleResolution": "NodeNext",
+        "target": "es2022",
+        "lib": [
+            "es2022"
+        ],
+        "esModuleInterop": true,
+        "strict": true,
+        "outDir": "./api", // Compile output to the api directory
+        "rootDir": "./api", // Source files are in the api directory
+        "noEmit": false
+    },
+    "include": [
+        "api/**/*.ts"
+    ],
+    "exclude": [
+        "node_modules",
+        "api/**/*.js"
+    ]
+}
