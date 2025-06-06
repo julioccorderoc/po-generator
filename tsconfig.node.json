@@ -20,6 +20,6 @@
   },
   "include": [
     "vite.config.ts",
-    "api/**/*.ts"
+    "api/send_form_data.csj"
   ]
 }
