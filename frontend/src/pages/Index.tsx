@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -29,14 +28,14 @@ const Index = () => {
           </p>
         </CardHeader>
         <CardContent className="text-center">
-          <Button 
+          <Button
             onClick={handleStartForm}
             size="lg"
             className="w-full"
           >
             Start Form
           </Button>
-          
+
           <div className="mt-6 text-sm text-gray-500">
             <p>This form will guide you through:</p>
             <ul className="mt-2 space-y-1 text-left">
@@ -49,6 +48,29 @@ const Index = () => {
             </ul>
           </div>
         </CardContent>
+        {/* TEST BUTTON BLOCK START - REMOVE THIS BLOCK TO DELETE TEST BUTTON */}
+        <div className="text-center mt-4">
+          <Button
+            variant="outline"
+            onClick={async () => {
+              try {
+                const response = await fetch("/api/test_post", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ test: true })
+                });
+                const data = await response.json();
+                alert("Response: " + JSON.stringify(data));
+              } catch (error) {
+                alert("Error: " + error);
+              }
+            }}
+            data-testid="test-page-button"
+          >
+            TEST
+          </Button>
+        </div>
+        {/* TEST BUTTON BLOCK END */}
       </Card>
     </div>
   );
