@@ -19,7 +19,6 @@
     "noFallthroughCasesInSwitch": true
   },
   "include": [
-    "vite.config.ts",
-    "api/send_form_data.csj"
+    "vite.config.ts"
   ]
 }
