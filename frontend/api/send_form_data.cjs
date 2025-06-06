@@ -1,4 +1,6 @@
-export default async function handler(req: any, res: any) {
+// This is now a .cjs file, so we use module.exports
+// Type annotations are not needed here for it to run.
+module.exports = async (req, res) => {
     if (req.method !== 'POST') {
         return res.status(405).json({ error: 'Method not allowed' });
     }
@@ -21,4 +23,4 @@ export default async function handler(req: any, res: any) {
     } catch (error) {
         return res.status(500).json({ error: 'Failed to forward request' });
     }
-}
+};
